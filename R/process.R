@@ -89,6 +89,7 @@ process_epigenome <- function(fastq_files,
   files <- lapply(files,
                   callPeak,
                   out_dir=path_peaks,
+                  path_logs=path_logs,
                   type=peak_type,
                   shift=shift)
 }
