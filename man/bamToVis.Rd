@@ -4,9 +4,15 @@
 \alias{bamToVis}
 \title{Conversion from BAM to visualization formats}
 \usage{
-bamToVis(samples, summaryStats = "", path_bam, path_vis, scales = "",
+bamToVis(
+  samples,
+  summaryStats = "",
+  path_bam,
+  path_vis,
+  scales = "",
   gen_sizes = "~/data/hg19.len",
-  path_bedGraphToBigWig = "~/tools/bedGraphToBigWig")
+  path_bedGraphToBigWig = "~/tools/bedGraphToBigWig"
+)
 }
 \arguments{
 \item{samples}{Character string or character vector with the name of the samples (whitout any specific file format suffix).}

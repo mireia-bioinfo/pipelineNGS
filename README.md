@@ -19,8 +19,8 @@ steps in the processing and analysis of high-throughput data.
 
 ## Installing pipelineNGS in your local machine
 Open your R session and type the following:
-```r
-devtools::install_git ("git@dogbert.imppc.local:mramos/pipelineNGS.git")
+```
+devtools::install_github("mireia-bioinfo/pipelineNGS")
 library(pipelineNGS)
 ```
 

@@ -60,7 +60,7 @@ alignmentBowtie2 <- function(file,
   } else if (type=="PE") { ## Align paired end file
     if (length(file)>2) stop("Incorrect number of files, should be 2 for paired-end alignment.")
     al_fastq <- paste("-1", file[1],
-                      "-2", file[2])
+                      "-2", file[2], "-X2000")
   }
 
   ## Start alignment

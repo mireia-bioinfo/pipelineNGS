@@ -18,7 +18,7 @@ callPeak(file, out_dir, path_logs, type = "narrow", shift = FALSE)
 \item{shift}{Logical indicating wether the reads should be shifted -100bp and extended to 200bp or not (default).}
 }
 \value{
-Bed files in path_pc with the location of the enriched regions.
+Bed files in out_dir with the location of the enriched regions.
 }
 \description{
 Calls the peaks present in your sample bam files and returns bed files with the location of

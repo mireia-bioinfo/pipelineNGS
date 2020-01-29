@@ -3,7 +3,6 @@
 \docType{package}
 \name{pipelineNGS}
 \alias{pipelineNGS}
-\alias{pipelineNGS-package}
 \title{Pipeline for Next-Generation Sequencing Experiments}
 \description{
 This package provides an R implementation to several tools and scripts for NGS alignment and post-processing.

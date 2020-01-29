@@ -4,8 +4,12 @@
 \alias{calculateMeanCons}
 \title{Calculates mean conservation score in a set of regions}
 \usage{
-calculateMeanCons(regions, scope = 500, bin = 50,
-  phastConsBW = "~/data/phastCons_46_placentalMammals/phastCons46way.placental.bw")
+calculateMeanCons(
+  regions,
+  scope = 500,
+  bin = 50,
+  phastConsBW = "~/data/phastCons_46_placentalMammals/phastCons46way.placental.bw"
+)
 }
 \arguments{
 \item{regions}{Set of regions as a \code{GRanges} object to use for the analysis. The first mcols column should either

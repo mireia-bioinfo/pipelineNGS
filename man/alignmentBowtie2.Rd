@@ -4,10 +4,18 @@
 \alias{alignmentBowtie2}
 \title{Alignment with Bowtie 2}
 \usage{
-alignmentBowtie2(file, out_name = NULL, suffix_fastq = NULL,
-  type = "SE", out_dir = "bam/", cores = 6,
+alignmentBowtie2(
+  file,
+  out_name = NULL,
+  suffix_fastq = NULL,
+  type = "SE",
+  out_dir = "bam/",
+  cores = 6,
   index = "/biodata/indices/species/Hsapiens/ucsc.hg19",
-  path_logs = "logs/", run = TRUE, ...)
+  path_logs = "logs/",
+  run = TRUE,
+  ...
+)
 }
 \arguments{
 \item{file}{Character string (single-end) or character vector (paired-end) with the path and

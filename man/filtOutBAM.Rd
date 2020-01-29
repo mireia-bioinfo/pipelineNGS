@@ -4,9 +4,13 @@
 \alias{filtOutBAM}
 \title{Filter out reads from BAM file}
 \usage{
-filtOutBAM(file, path_logs, remove = c("chrM", "chrUn", "_random",
-  "_hap", "_gl"), blacklist = "~/data/consensusBlacklist.bed",
-  cores = 6)
+filtOutBAM(
+  file,
+  path_logs,
+  remove = c("chrM", "chrUn", "_random", "_hap", "_gl"),
+  blacklist = "~/data/consensusBlacklist.bed",
+  cores = 6
+)
 }
 \arguments{
 \item{file}{Filenme and path for the BAM file to be filter out.}

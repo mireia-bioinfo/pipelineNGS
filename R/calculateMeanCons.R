@@ -21,8 +21,7 @@ calculateMeanCons <- function(regions,
                               bin=50,
                               phastConsBW="~/data/phastCons_46_placentalMammals/phastCons46way.placental.bw") {
   ## Generate a unique identifier for each query region (if not present)
-  if(ncol(mcols(regions))==0 |
-     length(unique(mcols(regions)[,1]))!=length(regions)) {
+  if(ncol(mcols(regions))==0) {
     regions$GeneID <- paste0("region_", 1:length(regions))
   } else {
     colnames(mcols(regions))[1] <- "GeneID"
@@ -30,7 +29,7 @@ calculateMeanCons <- function(regions,
 
   ## Extend regions to scope*2
   regions.ext <- resize(regions, width=scope*2, fix="center")
-  regions.ext$center <- start(ranges(regions.ext)) + width(regions)/2
+  regions.ext$center <- start(regions.ext) + scope
 
   ## Bin regions
   regions.bin <- tile(regions.ext, width=bin)
@@ -62,10 +61,13 @@ calculateMeanCons <- function(regions,
 
   mean_pos <- sapply(unique(sel.cons.df$pos),
                      function(x) mean(sel.cons.df$meanCons[sel.cons.df$pos==x]))
+  median_pos <- sapply(unique(sel.cons.df$pos),
+                     function(x) median(sel.cons.df$meanCons[sel.cons.df$pos==x]))
 
   ## Create output data.frame
   df <- data.frame("position"=unique(sel.cons.df$pos),
-                   "meanCons"=mean_pos)
+                   "meanCons"=mean_pos,
+                   "medianCons"=median_pos)
   return(df)
 }
 

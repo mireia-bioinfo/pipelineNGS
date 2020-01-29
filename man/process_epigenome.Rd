@@ -4,14 +4,25 @@
 \alias{process_epigenome}
 \title{Automated processing of ChIP-seq and ATAC-seq samples}
 \usage{
-process_epigenome(fastq_files, seq_type = "ATAC",
-  path_fastqc = "FastQC/", path_bam = "BAM/", path_peaks = "Peaks/",
-  path_logs = "Logs/", out_name = NULL, suffix_fastq = NULL,
-  type = "SE", index = "/biodata/indices/species/Hsapiens/ucsc.hg19",
+process_epigenome(
+  fastq_files,
+  seq_type = "ATAC",
+  run_fastqc = TRUE,
+  path_fastqc = "FastQC/",
+  path_bam = "BAM/",
+  path_peaks = "Peaks/",
+  path_logs = "Logs/",
+  out_name = NULL,
+  suffix_fastq = NULL,
+  type = "SE",
+  index = "/biodata/indices/species/Hsapiens/ucsc.hg19",
   remove = c("chrM", "chrUn", "_random", "_hap", "_gl"),
   blacklist = "~/data/consensusBlacklist.bed",
-  gen_sizes = "~/data/hg19.len", peak_type = NULL, shift = NULL,
-  cores = 8)
+  gen_sizes = "~/data/hg19.len",
+  peak_type = NULL,
+  shift = NULL,
+  cores = 8
+)
 }
 \arguments{
 \item{fastq_files}{Path and filenames for the fastq files to be analyzed.}

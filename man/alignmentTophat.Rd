@@ -4,8 +4,16 @@
 \alias{alignmentTophat}
 \title{Alignment with TopHat}
 \usage{
-alignmentTophat(samples, type = "SE", path_fastq, suffix_fastq, path_bam,
-  cores, trans_index, index)
+alignmentTophat(
+  samples,
+  type = "SE",
+  path_fastq,
+  suffix_fastq,
+  path_bam,
+  cores,
+  trans_index,
+  index
+)
 }
 \arguments{
 \item{samples}{Single element or character vector with the name of the samples (whitout any specific file format suffix).}
