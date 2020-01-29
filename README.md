@@ -3,7 +3,7 @@
 predifined functions to make calls to different programs for performing the different 
 steps in the processing and analysis of high-throughput data.
 
-**Warning**: The documentation of this packge is very outdates, use with caution!
+**Warning**: The documentation of this packge is very outdated, use with caution!
 
 ## Getting started
 ### Programs you need to have installed and included in your path:
