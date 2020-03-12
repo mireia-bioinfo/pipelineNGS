@@ -1,29 +1,93 @@
 # pipelineNGS
-`pipelineNGS` is a package for constructiong NGS analysis pipelines in R. It uses
-predifined functions to make calls to different programs for performing the different 
-steps in the processing and analysis of high-throughput data.
+`pipelineNGS` is a package for processing epigenomic high-throughput data, specifically histone mark ChIP-seq and ATAC-seq.
 
 ## Getting started
+
+As this package is a wrapper for some command line tools, you need to have them installed and in your `$PATH`. If they are not in your `$PATH`, you can also provide the path to the binary files using the appropriate arguments. 
+
 ### Programs you need to have installed and included in your path:
 - [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-- [bedtools](http://bedtools.readthedocs.io/en/latest/)
 - [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
-- [TopHat2](https://ccb.jhu.edu/software/tophat/index.shtml)
 - [Samtools](http://www.htslib.org/)
-- [Picard Tools](https://broadinstitute.github.io/picard/) (*)Has to be installed, no need to be in the path.
 - [MACS2](https://github.com/taoliu/MACS)
 
 ### Files you need to have in your local machine:
-- Chromosome sizes (`gen_sizes`). Default value: `"~/data/hg19.len"`
-- ENCODE Blacklist (`blacklist`). Default value: `"~/data/consensusBlacklist.bed"`
+
+Additionally, you will need to download reference files to perform the different steps in the pre-processing pipeline:
+
+- Reference genome indexed with Bowtie2. See more information [here](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#indexing-a-reference-genome). You can download the fasta files for the different genome builds from the [UCSC download site](https://hgdownload.soe.ucsc.edu/downloads.html#human).
+- Chromosome sizes (`gen_sizes`). You can download this file also from the UCSC: [hg38](https://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes) or [hg19](https://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.chrom.sizes)
+- ENCODE Blacklist (`blacklist`). They can be downloaded from [here](https://sites.google.com/site/anshulkundaje/projects/blacklists).
 
 ## Installing pipelineNGS in your local machine
-Open your R session and type the following:
+
+Open your R session, install the `devtools` package if it is not already in your machine and type the following:
+
 ```
+# Install pipelineNGS package
 devtools::install_github("mireia-bioinfo/pipelineNGS")
+
+# Load pipelineNGS package
 library(pipelineNGS)
 ```
 
-## Overview
-In the following images you can observe the general pipelina that is followed for the different steps of the analysis.
-![](vignettes/figures/align_postproc.png) 
+## Quick start
+
+**Warning**: In our current linux machines, we will need to use a python environment to run Macs2. The code in the following section should be saved in an Rscript and run from the terminal **after** running the command `activate-macs-git-2017.5.15`.
+
+### Running pipelineNGS with H3K27ac ChIP-seq data
+
+```
+## List of fastq files to analyze
+fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
+
+## Rename fastq_files
+fastq_names <- gsub(".fastq.gz", "", basename(fastq_files))
+
+## Proces fastq files
+process_epigenome(fastq_files = fastq_files,
+                  run_fastqc = FALSE,
+                  seq_type = "CHIP",
+                  out_name = fastq_names,
+                  index = "/biodata/indices/species/Hsapiens/hg38",
+                  blacklist = "/imppc/labs/lplab/share/reference/blacklists/hg38-blacklist.v2.bed",
+                  gen_sizes = "/imppc/labs/lplab/share/reference/chrom_sizes/hg38.len",
+                  cores=10)
+                  
+## Get and save stats
+stats <- getStats(raw_bam=list.files("BAM/", pattern=".raw.bam$", full.names=TRUE),
+                  path_logs = "Logs/",
+                  path_peaks = "Peaks",
+                  peak_type = "broadPeak") 
+save(stats, file="Logs/stats_samples.rda")
+
+
+```
+
+### Running pipelineNGS with ATAC-seq data
+
+
+```
+## List of fastq files to analyze
+fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
+
+## Rename fastq_files
+fastq_names <- gsub(".fastq.gz", "", basename(fastq_files))
+
+## Proces fastq files
+process_epigenome(fastq_files = fastq_files,
+                  run_fastqc = FALSE,
+                  seq_type = "ATAC",
+                  out_name = fastq_names,
+                  index = "/biodata/indices/species/Hsapiens/hg38",
+                  blacklist = "/imppc/labs/lplab/share/reference/blacklists/hg38-blacklist.v2.bed",
+                  gen_sizes = "/imppc/labs/lplab/share/reference/chrom_sizes/hg38.len",
+                  cores=10)
+
+## Get and save stats
+stats <- getStats(raw_bam=list.files("BAM/", pattern=".raw.bam$", full.names=TRUE),
+                  path_logs = "Logs/",
+                  path_peaks = "Peaks",
+                  peak_type = "narrowPeak") 
+save(stats, file="Logs/stats_samples.rda")
+```

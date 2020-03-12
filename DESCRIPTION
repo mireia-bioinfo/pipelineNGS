@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: person("Mireia", "Ramos-Rodriguez", email = "mramos@igtp.cat", role = c("aut", "cre"))
 Description: This package provides functions for processing FASTQ files and doing the downstream analysis, such as peak calling, conversion to bigWig format or motif analysis.
 Depends: R (>= 3.4.0)
-License: What license is it under?
+License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
 Imports:
