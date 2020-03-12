@@ -1,6 +1,8 @@
 # pipelineNGS
 `pipelineNGS` is a package for processing epigenomic high-throughput data, specifically histone mark ChIP-seq and ATAC-seq.
 
+**Warning**: The documentation of this packge is very outdated, use with caution!
+
 ## Getting started
 
 As this package is a wrapper for some command line tools, you need to have them installed and in your `$PATH`. If they are not in your `$PATH`, you can also provide the path to the binary files using the appropriate arguments. 
