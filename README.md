@@ -1,13 +1,12 @@
 # pipelineNGS
 `pipelineNGS` is a package for processing epigenomic high-throughput data, specifically histone mark ChIP-seq and ATAC-seq.
 
-**Warning**: The documentation of this packge is very outdated, use with caution!
-
 ## Getting started
 
-As this package is a wrapper for some command line tools, you need to have them installed and in your `$PATH`. If they are not in your `$PATH`, you can also provide the path to the binary files using the appropriate arguments. 
-
 ### Programs you need to have installed and included in your path:
+
+As this package is a wrapper for some command line tools, you need to have this programs in your `$PATH`. If they are not in your `$PATH`, you can also provide the path to the binary files using the appropriate arguments. 
+
 - [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 - [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
 - [Samtools](http://www.htslib.org/)
@@ -39,6 +38,8 @@ library(pipelineNGS)
 
 ### Running pipelineNGS with H3K27ac ChIP-seq data
 
+Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
+
 ```
 ## List of fastq files to analyze
 fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
@@ -62,12 +63,18 @@ stats <- getStats(raw_bam=list.files("BAM/", pattern=".raw.bam$", full.names=TRU
                   path_peaks = "Peaks",
                   peak_type = "broadPeak") 
 save(stats, file="Logs/stats_samples.rda")
+```
 
+From the terminal run the following commands: 
 
+```
+$ activate-macs-git-2017.5.15
+$ Rscript process_samples.R
 ```
 
 ### Running pipelineNGS with ATAC-seq data
 
+Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
 
 ```
 ## List of fastq files to analyze
@@ -92,4 +99,11 @@ stats <- getStats(raw_bam=list.files("BAM/", pattern=".raw.bam$", full.names=TRU
                   path_peaks = "Peaks",
                   peak_type = "narrowPeak") 
 save(stats, file="Logs/stats_samples.rda")
+```
+
+From the terminal run the following commands: 
+
+```
+$ activate-macs-git-2017.5.15
+$ Rscript process_samples.R
 ```
