@@ -41,6 +41,8 @@ library(pipelineNGS)
 Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
 
 ```
+library(pipelineNGS)
+
 ## List of fastq files to analyze
 fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
 
@@ -77,6 +79,8 @@ $ Rscript process_samples.R
 Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
 
 ```
+library(pipelineNGS)
+
 ## List of fastq files to analyze
 fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
 
