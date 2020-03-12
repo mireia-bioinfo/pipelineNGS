@@ -44,14 +44,14 @@ Create a file called `process_samples.R` containing the following code (change `
 ## List of fastq files to analyze
 fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
 
-## Rename fastq_files
-fastq_names <- gsub(".fastq.gz", "", basename(fastq_files))
+## Name of the output files
+output_names <- gsub(".fastq.gz", "", basename(fastq_files))
 
 ## Proces fastq files
 process_epigenome(fastq_files = fastq_files,
                   run_fastqc = FALSE,
                   seq_type = "CHIP",
-                  out_name = fastq_names,
+                  out_name = output_names,
                   index = "/biodata/indices/species/Hsapiens/hg38",
                   blacklist = "/imppc/labs/lplab/share/reference/blacklists/hg38-blacklist.v2.bed",
                   gen_sizes = "/imppc/labs/lplab/share/reference/chrom_sizes/hg38.len",
@@ -80,14 +80,14 @@ Create a file called `process_samples.R` containing the following code (change `
 ## List of fastq files to analyze
 fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
 
-## Rename fastq_files
-fastq_names <- gsub(".fastq.gz", "", basename(fastq_files))
+## Name of the output files
+output_names <- gsub(".fastq.gz", "", basename(fastq_files))
 
 ## Proces fastq files
 process_epigenome(fastq_files = fastq_files,
                   run_fastqc = FALSE,
                   seq_type = "ATAC",
-                  out_name = fastq_names,
+                  out_name = output_names,
                   index = "/biodata/indices/species/Hsapiens/hg38",
                   blacklist = "/imppc/labs/lplab/share/reference/blacklists/hg38-blacklist.v2.bed",
                   gen_sizes = "/imppc/labs/lplab/share/reference/chrom_sizes/hg38.len",
