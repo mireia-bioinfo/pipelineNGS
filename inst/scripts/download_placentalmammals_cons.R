@@ -3,8 +3,8 @@
 #############################################################
 
 out_dir <- "~/data/phastCons_46_placentalMammals"
-wigToBigWig <- "~/bin/wigToBigWig"
-chrom_info <- "~/refs/hg19_chrom_info.txt"
+wigToBigWig <- "wigToBigWig"
+chrom_info <- "~/refs/hg19.chromSizes.txt"
 
 ## List necessary files -------------------------------------------------------
 
@@ -20,22 +20,41 @@ files <- paste0(url, files)
 
 dir.create(out_dir, recursive=TRUE)
 
-for (i in files) {
-  download.file(i, destfile=file.path(out_dir,
-                                      basename(i)))
-}
+# for (i in files) {
+#   download.file(i, destfile=file.path(out_dir,
+#                                       basename(i)))
+# }
 
 ## Convert to bigWig ----------------------------------------------------------
 
 wigs <- file.path(out_dir, basename(files))
+wigs <- wigs[order(wigs)]
+bw <- gsub(".wigFix.gz", ".bw", wigs)
 
-cmds <- paste(wigToBigWig, wigs, chrom_info, gsub(".wigFix.gz", ".bw", wigs))
+cmds <- paste(wigToBigWig, wigs, chrom_info, bw)
 
 for (c in cmds) {
-  message("Running", c)
-  system2(c)
+#  message("Running >>>", c)
+#  system(c)
 }
 
-## Merge bigWig files ---------------------------------------------------------
+## Merge bigWigs ---------------------
+cmd <- paste("bigWigMerge", paste0(bw, collapse=" "), file.path(out_dir, "placental_mammals.bedGraph"))
 
-cmd <- "bigWigMerge "
+print(cmd)
+system(cmd)
+
+## Convert to bigWig ----------------
+# Sort
+cmd <- paste("sort -k1,1 -k2,2n --buffer-size=24G", file.path(out_dir, "placental_mammals.bedGraph"),
+	     ">", file.path(out_dir, "placental_mammals.srtd.bedGraph"))
+system(cmd)
+
+# Convert
+cmd <- paste("bedGraphToBigWig", file.path(out_dir, "placental_mammals.srtd.bedGraph"), chrom_info, 
+	     file.path(out_dir, "placental_mammals.bw"))
+system(cmd)
+#cmd <- paste("zcat", paste0(wigs, collapse=" "), "|", wigToBigWig, "-clip stdin", 
+#	     chrom_info, file.path(out_dir, "placental_mammals.bw"))
+#print(cmd)
+#system(cmd)
