@@ -10,9 +10,12 @@ bamToVis(
   path_bam,
   path_vis,
   scales = "",
-  gen_sizes = "~/data/hg19.len",
+  gen_sizes = "~/refs/hg19.chromSizes.txt",
+  cores = 8,
+  perc_mem = "50\%",
   path_bedGraphToBigWig = "bedGraphToBigWig",
-  path_betools_genomecov = "bedtools genomecov"
+  path_betools_genomecov = "bedtools genomecov",
+  unc = FALSE
 )
 }
 \arguments{
@@ -28,7 +31,13 @@ bamToVis(
 
 \item{gen_sizes}{Character string indicating the path where the file with chromosome name and sizes can be found. Default value: "~/data/hg19.len"}
 
+\item{cores}{Number of cores to use.}
+
+\item{perc_mem}{Percentage of memory to use.}
+
 \item{path_bedGraphToBigWig}{Character string indicating the path where the program converter from bedGraph to BigWig can be found. Default value: "~/tools/bedGraphToBigWig".}
+
+\item{unc}{Logical indicating whether to compress or not the resulting bigWig file.}
 
 \item{path_bedtools_genomecov}{Character string indicating the path where the bedtools genomecov binary can be found.}
 }
