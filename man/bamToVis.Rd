@@ -11,7 +11,8 @@ bamToVis(
   path_vis,
   scales = "",
   gen_sizes = "~/data/hg19.len",
-  path_bedGraphToBigWig = "~/tools/bedGraphToBigWig"
+  path_bedGraphToBigWig = "bedGraphToBigWig",
+  path_betools_genomecov = "bedtools genomecov"
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ bamToVis(
 \item{gen_sizes}{Character string indicating the path where the file with chromosome name and sizes can be found. Default value: "~/data/hg19.len"}
 
 \item{path_bedGraphToBigWig}{Character string indicating the path where the program converter from bedGraph to BigWig can be found. Default value: "~/tools/bedGraphToBigWig".}
+
+\item{path_bedtools_genomecov}{Character string indicating the path where the bedtools genomecov binary can be found.}
 }
 \value{
 Two visualization files: bedgraph (.bdg) and bigwig (.bw) in your path_vis.

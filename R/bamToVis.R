@@ -8,6 +8,7 @@
 #' @param path_vis Character string indicating the path where you want to save visualization files (it will be created if it does not exist).
 #' @param gen_sizes Character string indicating the path where the file with chromosome name and sizes can be found. Default value: "~/data/hg19.len"
 #' @param path_bedGraphToBigWig Character string indicating the path where the program converter from bedGraph to BigWig can be found. Default value: "~/tools/bedGraphToBigWig".
+#' @param path_bedtools_genomecov Character string indicating the path where the bedtools genomecov binary can be found.
 #' @return Two visualization files: bedgraph (.bdg) and bigwig (.bw) in your path_vis.
 #' @export
 #' @examples
@@ -17,7 +18,8 @@
 #' }
 bamToVis <- function(samples, summaryStats="", path_bam, path_vis, scales="",
                      gen_sizes="~/data/hg19.len",
-                     path_bedGraphToBigWig="~/tools/bedGraphToBigWig") {
+                     path_bedGraphToBigWig="bedGraphToBigWig",
+                     path_betools_genomecov="bedtools genomecov") {
   message(paste0("[", format(Sys.time(), "%X"), "] ", ">> Converting to BedGraph and Bigwig"))
   dir.create(path_vis, F)
   if (summaryStats!="") load(summaryStats)
@@ -33,7 +35,7 @@ bamToVis <- function(samples, summaryStats="", path_bam, path_vis, scales="",
 
     c = c + 1
     message(paste0("[", format(Sys.time(), "%X"), "] ", "------ Converting to BedGraph"))
-    bdg <- paste("/soft/bio/bedtools/bin/genomeCoverageBed -bg -split",
+    bdg <- paste(path_betools_genomecov, "-bg -split",
                  "-scale", scale,
                  "-ibam", paste0(path_bam, i, ".bam"),
                  "-g", gen_sizes,
