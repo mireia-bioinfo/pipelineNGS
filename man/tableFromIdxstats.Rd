@@ -4,7 +4,7 @@
 \alias{tableFromIdxstats}
 \title{Table form idxstats}
 \usage{
-tableFromIdxstats(bam)
+tableFromIdxstats(log)
 }
 \arguments{
 \item{bam}{Character string with the name and path of a single BAM file. Index should

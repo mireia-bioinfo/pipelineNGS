@@ -74,7 +74,8 @@ alignmentBowtie2 <- function(file,
                "| samtools view - -b -@", cores-1,
                "| samtools sort - -@", cores-1, "-m 2G",
                "-o", paste0(.al, name, ".raw.bam"),
-               "; samtools index", paste0(.al, name, ".raw.bam"), "-@", cores-1
+               "; samtools index", paste0(.al, name, ".raw.bam"), "-@", cores-1,
+               "; samtools idxstats", paste0(.al, name, ".raw.bam"), ">", file.path(.log, paste0(name, ".raw.idxstats.log"))
                )
   message(paste("\t", cmd))
   if(run) system(cmd)

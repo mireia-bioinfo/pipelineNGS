@@ -12,11 +12,12 @@
 #' \dontrun{
 #' stats <- getStats(raw_bam=c("path/to/file.bam", "path/to/file2.bam"), path_logs="path/logs")
 #' }
-getStats <- function(raw_bam,
-                     path_logs,
+getStats <- function(path_logs,
                      path_peaks,
                      peak_type="narrowPeak") {
-  stats <- lapply(raw_bam,
+
+  names <- gsub(".alignment.log", "", list.files(path_logs, pattern="alignment.log"))
+  stats <- lapply(names,
                   .getStatsSingle,
                   path_logs=path_logs,
                   path_peaks=path_peaks,
@@ -26,48 +27,28 @@ getStats <- function(raw_bam,
   return(stats)
 }
 
-#' Table form idxstats
-#'
-#' Given a bam file, returns samtools idxstats output as a data.frame.
-#' @param bam Character string with the name and path of a single BAM file. Index should
-#' be in the same folder.
-#' @return A data.frame with the output of samtools idxstats.
-#' @export
-#' @examples
-#' \dontrun{
-#' df <- tableFromIdxstats("path/to/file.bam")
-#' }
-tableFromIdxstats <- function(bam) {
-  stats <- system(paste("samtools idxstats", bam),
-                  intern = TRUE)
 
-  stats <- as.data.frame(do.call(rbind, strsplit(stats, "\t")),
-                         stringsAsFactors=FALSE)
-  colnames(stats) <- c("chr", "chr_len", "aligned", "not_aligned")
-  stats$chr_len <- as.numeric(stats$chr_len)
-  stats$aligned <- as.numeric(stats$aligned)
-  stats$not_aligned <- as.numeric(stats$not_aligned)
-  return(stats)
-}
 
-.getStatsSingle <- function(bam,
+.getStatsSingle <- function(name,
                             path_logs,
                             path_peaks,
                             peak_type) {
-  # Stats for RAW file
-  stats <- tableFromIdxstats(bam)
 
-  name <- getNameFromPath(bam, suffix=".raw.bam")
-  total_reads <- sum(stats$aligned) + sum(stats$not_aligned)
-  total_aligned <- sum(stats$aligned)
+  # Alignment stats from log file
+  stats <- .parseBowtie2LogSE(file.path(path_logs, paste0(name, ".alignment.log")))
+  total_reads <- stats$unpaired
+  total_aligned <- stats$unique + stats$multi
   alignment_rate <- total_aligned/total_reads*100
-  chrM <- stats$aligned[stats$chr=="chrM"]
+
+  # Chr stats
+  idxstats <- tableFromIdxstats(file.path(path_logs, paste0(name, ".raw.idxstats.log")))
+  chrM <- idxstats$aligned[idxstats$chr=="chrM"]
 
   # Get duplicates stats
-  if (file.exists(paste0(path_logs, name, ".rmdup.log"))) {
-    dup.tab <- read.delim(paste0(path_logs, name, ".rmdup.log"),
-                          stringsAsFactors=FALSE, header=FALSE)[5,]
-    duplicates <- as.numeric(strsplit(dup.tab, " ")[[1]][3])
+  if (file.exists(file.path(path_logs, paste0(name, ".rmdup.log")))) {
+    dup.tab <- read.delim(file.path(path_logs, paste0(name, ".rmdup.log")),
+                          stringsAsFactors=FALSE, header=FALSE)
+    duplicates <- as.numeric(strsplit(dup.tab[grep("DUPLICATE TOTAL", dup.tab[,1]),1], ": ")[[1]][2])
   } else {
     duplicates <- NA
   }
@@ -85,13 +66,14 @@ tableFromIdxstats <- function(bam) {
   }
 
   # Get final number of reads
-  stats_final <- tableFromIdxstats(gsub(".raw", "", bam))
+  stats_final <-tableFromIdxstats(file.path(path_logs, paste0(name, ".idxstats.log")))
   final_reads <- sum(stats_final$aligned)
 
   # Create data.frame
   df <- data.frame(sampleID=name,
                    total_reads=total_reads,
                    aligned_reads=total_aligned,
+                   multi_reads=stats$multi,
                    chrM_reads=chrM,
                    duplicate_reads=duplicates,
                    final_reads=final_reads,
@@ -100,4 +82,39 @@ tableFromIdxstats <- function(bam) {
                    duplicate_rate=duplicates/total_reads*100,
                    final_rate=final_reads/total_reads*100,
                    num_peaks=peaks)
+}
+
+.parseBowtie2LogSE <- function(logfile, paired=FALSE) {
+  log <- readLines(con = logfile)
+  unpaired <- .obtainReadNumber(log[grep("were unpaired", log)])
+  unaligned <- .obtainReadNumber(log[grep("aligned 0 times", log)])
+  unique <- .obtainReadNumber(log[grep("aligned exactly 1 time", log)])
+  multi <- .obtainReadNumber(log[grep("aligned >1 times", log)])
+
+  stats <- data.frame(unpaired, unaligned, unique, multi)
+  return(stats)
+}
+
+.obtainReadNumber <- function(line) {
+  as.numeric(strsplit(gsub(" ", "", line), "(", fixed=TRUE)[[1]][1])
+}
+
+#' Table form idxstats
+#'
+#' Given a bam file, returns samtools idxstats output as a data.frame.
+#' @param bam Character string with the name and path of a single BAM file. Index should
+#' be in the same folder.
+#' @return A data.frame with the output of samtools idxstats.
+#' @export
+#' @examples
+#' \dontrun{
+#' df <- tableFromIdxstats("path/to/file.bam")
+#' }
+tableFromIdxstats <- function(log) {
+  stats <- read.delim(log)
+  colnames(stats) <- c("chr", "chr_len", "aligned", "not_aligned")
+  stats$chr_len <- as.numeric(stats$chr_len)
+  stats$aligned <- as.numeric(stats$aligned)
+  stats$not_aligned <- as.numeric(stats$not_aligned)
+  return(stats)
 }

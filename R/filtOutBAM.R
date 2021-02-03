@@ -40,7 +40,9 @@ filtOutBAM <- function(file,
                gsub(".raw", "", file, fixed=TRUE), # output
                "-r -s 2>",
                paste0(path_logs, getNameFromPath(file, suffix=".raw.bam"), ".rmdup.log"),
-               "; samtools index", gsub(".raw", "", file, fixed=TRUE), "-@", cores-1)
+               "; samtools index", gsub(".raw", "", file, fixed=TRUE), "-@", cores-1,
+               "; samtools idxstats", gsub(".raw", "", file, fixed=TRUE), ">", file.path(.log, paste0(name, ".idxstats.log"))
+               )
   system(cmd)
 
   ## Remove temporary files
