@@ -30,7 +30,7 @@ process_epigenome <- function(fastq_files,
                               type="SE",
                               index="/biodata/indices/species/Hsapiens/ucsc.hg19",
                               # 2) FiltOut params
-                              remove=c("chrM", "chrUn", "_random", "_hap", "_gl"),
+                              remove=c("chrM", "chrUn", "_random", "_hap", "_gl", "EBVls"),
                               blacklist="~/data/consensusBlacklist.bed",
                               # 4) Peak calling params
                               peak_type=NULL,
@@ -67,6 +67,7 @@ process_epigenome <- function(fastq_files,
   files <- lapply(files,
                   filtOutBAM,
                   path_logs=path_logs,
+                  type = type,
                   remove=remove,
                   blacklist=blacklist,
                   cores=cores)

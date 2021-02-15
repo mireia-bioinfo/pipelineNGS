@@ -16,12 +16,12 @@ process_epigenome(
   suffix_fastq = NULL,
   type = "SE",
   index = "/biodata/indices/species/Hsapiens/ucsc.hg19",
-  remove = c("chrM", "chrUn", "_random", "_hap", "_gl"),
+  remove = c("chrM", "chrUn", "_random", "_hap", "_gl", "EBVls"),
   blacklist = "~/data/consensusBlacklist.bed",
-  gen_sizes = "~/data/hg19.len",
   peak_type = NULL,
   shift = NULL,
-  cores = 8
+  cores = 8,
+  chunk = 1e+07
 )
 }
 \arguments{
@@ -32,6 +32,8 @@ process_epigenome(
 \item{path_fastqc}{Path for the FastQC output.}
 
 \item{path_bam}{Path for the output BAM files.}
+
+\item{chunk}{Size of the chunk to lead into memory for ATAC-seq read offset.}
 }
 \description{
 This function performs all necessary steps in the ChIP-seq processing pipeline.

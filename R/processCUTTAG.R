@@ -2,6 +2,7 @@
 #'
 #' @param fastq_files List containing the different FastQ file pairs (one list element for each sample).
 #' @param out_name Sample name to use for each of the samples.
+#' @param type Character indicating if reads are paired end (PE) or single end (SE).
 #' @param run_fastqc Logical indicating whether to run FastQC or not.
 #' @param path_fastqc Path for the FastQC results.
 #' @param path_bam Path for the aligment and filtering results.
@@ -18,6 +19,7 @@
 #' @export
 processCUTTAG <- function(fastq_files,
                           out_name,
+                          type = "PE",
                           run_fastqc=TRUE,
                           # Directories
                           path_fastqc="FastQC/",
@@ -27,7 +29,7 @@ processCUTTAG <- function(fastq_files,
                           # 1) Alignment params
                           index="/biodata/indices/species/Hsapiens/ucsc.hg19",
                           # 2) FiltOut params
-                          remove=c("chrM", "chrUn", "_random", "_hap", "_gl"),
+                          remove=c("chrM", "chrUn", "_random", "_hap", "_gl", "EBV"),
                           blacklist="~/data/consensusBlacklist.bed",
                           # 3) Peak calling
                           chr_sizes = "",
@@ -54,8 +56,7 @@ processCUTTAG <- function(fastq_files,
   files <- mapply(alignmentBowtie2,
                   file=fastq_files,
                   out_name=out_name,
-                  MoreArgs = list(suffix_fastq=suffix_fastq,
-                                  type="PE",
+                  MoreArgs = list(type="PE",
                                   index=index,
                                   out_dir=path_bam,
                                   path_logs=path_logs,
@@ -67,6 +68,7 @@ processCUTTAG <- function(fastq_files,
   files <- lapply(files,
                   filtOutBAM,
                   path_logs=path_logs,
+                  type=type,
                   remove=remove,
                   blacklist=blacklist,
                   cores=cores)
@@ -76,6 +78,7 @@ processCUTTAG <- function(fastq_files,
                   peakCallingSEACR,
                   path_peaks = path_peaks,
                   chr_sizes = chr_sizes,
+                  cores = cores,
                   bedtools_bamtobed = bedtools_bamtobed,
                   bedtools_genomecov = bedtools_genomecov,
                   seacr = seacr)
@@ -88,6 +91,7 @@ processCUTTAG <- function(fastq_files,
 peakCallingSEACR <- function(bam_file,
                              path_peaks,
                              chr_sizes,
+                             cores = 5,
                              bedtools_bamtobed = "bedtools bamtobed",
                              bedtools_genomecov = "bedtools genomecov",
                              seacr = "SEACR_1.3.sh") {
@@ -96,20 +100,23 @@ peakCallingSEACR <- function(bam_file,
   bam_dir <- dirname(bam_file)
 
   ## 1) Convert bam files to bedgraph
-  cmd <- paste(bedtools_bamtobed, "-bedpe -i", bam_file, "|",
-               "awk '$1==$4 && $6-$2 < 1000 {print $0}' |",
-               "cut -f 1,2,6 |",
-               "sort -k1,1 -k2,2n -k3,3n >", file.path(bam_dir, paste0(name, ".bed")))
+  cmd <- paste("samtools sort -n", bam_file, "-@", cores-1, "-m 2G", "-o -",
+               "|", bedtools_bamtobed, "-bedpe -i stdin",
+               "| awk '$1==$4 && $6-$2 < 1000 {print $0}'",
+               "| cut -f 1,2,6",
+               "| sort -dsk1,1 -k2n,2 -k3nr,3 >", file.path(bam_dir, paste0(name, ".bed")))
   system(cmd)
   cmd <- paste(bedtools_genomecov, "-bg -i", file.path(bam_dir, paste0(name, ".bed")),
                "-g", chr_sizes,
                ">", file.path(bam_dir, paste0(name, ".bedgraph")))
   system(cmd)
 
+  cmd <- paste()
   ## 2) Call peaks with SEACR
   cmd <- paste(seacr,
-               file_bedgraph,
-               "norm stringent",
-               file.path(path_peaks, paste0(name, "_peaks")))
+               file.path(bam_dir, paste0(name, ".bedgraph")),
+               "0.01 norm stringent",
+               file.path(path_peaks, paste0(name, ".peaks")))
+  message(paste("\t", cmd))
   system(cmd)
 }

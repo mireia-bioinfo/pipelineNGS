@@ -3,6 +3,7 @@
 #' Function that filters out the following reads: 1) aligned no non-cannonical chromosomes, 2) not aligned, 3) aligned to ENCODE black-listed regions and 3) duplicated reads.
 #' @param file Filenme and path for the BAM file to be filter out.
 #' @param path_logs Path for the output logs.
+#' @param type Either "SE" (single end) or "PE" (paired end).
 #' @param remove List of regular expressions to filter out from chromosome names.
 #' @param blacklist Path for ENCODE blacklist in bed format.
 #' @param cores Number of cores to use for the analysis.
@@ -17,7 +18,8 @@
 #' }
 filtOutBAM <- function(file,
                        path_logs,
-                       remove=c("chrM", "chrUn", "_random", "_hap", "_gl"),
+                       type = "SE",
+                       remove=c("chrM", "chrUn", "_random", "_hap", "_gl", "EBV"),
                        blacklist="~/data/consensusBlacklist.bed",
                        cores=6) {
 
@@ -30,24 +32,40 @@ filtOutBAM <- function(file,
                "| samtools view - -b -L", blacklist, "-U", gsub(".raw", ".tmp", file, fixed=TRUE),
                "-o trash.bam"
                )
+  message(paste("\t", cmd))
   system(cmd)
+
+  ## Fixmate if type is PE
+  if(type=="PE") {
+    message(paste0("[", format(Sys.time(), "%X"), "] ",
+                   ">> Fixing mate: ", file))
+    cmd_fixmate <- paste("samtools sort -n", gsub(".raw", ".tmp", file, fixed=TRUE),
+                         "-@", cores-1, "-m 2G -o - | samtools fixmate -m - -",
+                         "| samtools sort - -@", cores-1, "-m 2G -o", gsub(".raw", ".fixmate", file, fixed=TRUE))
+    message(paste("\t", cmd_fixmate))
+    system(cmd_fixmate)
+    input_rmdup <- gsub(".raw", ".fixmate", file, fixed=TRUE)
+  } else {
+    input_rmdup <- gsub(".raw", ".tmp", file, fixed=TRUE)
+  }
 
   ## Remove duplicates
   message(paste0("[", format(Sys.time(), "%X"), "] ",
                  ">> Removing duplicates: ", file))
   cmd <- paste("samtools markdup",
-               gsub(".raw", ".tmp", file, fixed=TRUE), # input
+               input_rmdup, # input
                gsub(".raw", "", file, fixed=TRUE), # output
                "-r -s 2>",
                paste0(path_logs, getNameFromPath(file, suffix=".raw.bam"), ".rmdup.log"),
                "; samtools index", gsub(".raw", "", file, fixed=TRUE), "-@", cores-1,
                "; samtools idxstats", gsub(".raw", "", file, fixed=TRUE), ">", file.path(path_logs, paste0(getNameFromPath(file, suffix=".raw.bam"), ".idxstats.log"))
                )
+  message(paste("\t", cmd))
   system(cmd)
 
   ## Remove temporary files
-  file.remove("trash.bam",
-              gsub(".raw", ".tmp", file, fixed=TRUE))
+  # file.remove("trash.bam",
+  #             input_rmdup)
 
   return(invisible(gsub(".raw", "", file, fixed=TRUE)))
 }

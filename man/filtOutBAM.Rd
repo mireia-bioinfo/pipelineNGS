@@ -7,7 +7,8 @@
 filtOutBAM(
   file,
   path_logs,
-  remove = c("chrM", "chrUn", "_random", "_hap", "_gl"),
+  type = "SE",
+  remove = c("chrM", "chrUn", "_random", "_hap", "_gl", "EBV"),
   blacklist = "~/data/consensusBlacklist.bed",
   cores = 6
 )
@@ -16,6 +17,8 @@ filtOutBAM(
 \item{file}{Filenme and path for the BAM file to be filter out.}
 
 \item{path_logs}{Path for the output logs.}
+
+\item{type}{Either "SE" (single end) or "PE" (paired end).}
 
 \item{remove}{List of regular expressions to filter out from chromosome names.}
 

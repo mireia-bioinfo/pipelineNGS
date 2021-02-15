@@ -43,7 +43,7 @@ alignmentBowtie2 <- function(file,
   .al <- out_dir; dir.create(.al, F) # Create BAM directory
   .log <- path_logs; dir.create(.log, F) # Create directory for logs
 
-  if (!file.exists(file)) stop(paste("Input file", file, "does not exist"))
+  if (!all(file.exists(unlist(file)))) stop(paste("Input file", file, "does not exist"))
 
   ## Get names for aligned files
   if (is.null(out_name)) {
@@ -56,7 +56,6 @@ alignmentBowtie2 <- function(file,
   if (type=="SE") { ## Align single end file
     if (length(file)>1) stop("Incorrect number of files, should be 1 for single-end alignment.")
     al_fastq <- paste("-U", file)
-
   } else if (type=="PE") { ## Align paired end file
     if (length(file)>2) stop("Incorrect number of files, should be 2 for paired-end alignment.")
     al_fastq <- paste("-1", file[1],
@@ -72,8 +71,7 @@ alignmentBowtie2 <- function(file,
                ...,
                "2>", paste0(.log, name, ".alignment.log"),
                "| samtools view - -b -@", cores-1,
-               "| samtools sort - -@", cores-1, "-m 2G",
-               "-o", paste0(.al, name, ".raw.bam"),
+               "| samtools sort - -@", cores-1, "-m 2G", "-o", paste0(.al, name, ".raw.bam"),
                "; samtools index", paste0(.al, name, ".raw.bam"), "-@", cores-1,
                "; samtools idxstats", paste0(.al, name, ".raw.bam"), ">", file.path(.log, paste0(name, ".raw.idxstats.log"))
                )
