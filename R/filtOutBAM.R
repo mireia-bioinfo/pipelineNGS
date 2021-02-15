@@ -41,7 +41,7 @@ filtOutBAM <- function(file,
                "-r -s 2>",
                paste0(path_logs, getNameFromPath(file, suffix=".raw.bam"), ".rmdup.log"),
                "; samtools index", gsub(".raw", "", file, fixed=TRUE), "-@", cores-1,
-               "; samtools idxstats", gsub(".raw", "", file, fixed=TRUE), ">", file.path(.log, paste0(name, ".idxstats.log"))
+               "; samtools idxstats", gsub(".raw", "", file, fixed=TRUE), ">", file.path(path_logs, paste0(getNameFromPath(file, suffix=".raw.bam"), ".idxstats.log"))
                )
   system(cmd)
 

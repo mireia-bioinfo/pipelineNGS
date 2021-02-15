@@ -34,3 +34,95 @@ offsetATAC <- function(file,
 
   return(invisible(gsub(".bam", ".offset.bam", file)))
 }
+
+#' Offset correction for SE ATAC-seq data
+#'
+#' It performs offset corrrection on single end ATAC-seq files.
+#' @param file Path for the BAM file.
+#' @param chunk Size of the read chunk to load into memory.
+#' @param positive Positive offset: 4.
+#' @param negative Negative offset: 5.
+#' @importClassesFrom Rsamtools BamFile
+#' @importMethodsFrom S4Vectors metadata
+#' @importFrom rtracklayer export
+#' @export
+offsetATACSE <- function(file,
+                         chunk=1e6,
+                         positive = 4L,
+                         negative = 5L) {
+  message(paste0("[", format(Sys.time(), "%X"), "] ", ">> Offset correction Tn5: ", file))
+
+  outbam <- gsub(".bam", ".offset.bam", file)
+
+  ## Obtain possible tags to read
+  possibleTag <- list("integer"=c("AM", "AS", "CM", "CP", "FI", "H0", "H1", "H2",
+                                  "HI", "IH", "MQ", "NH", "NM", "OP", "PQ", "SM",
+                                  "TC", "UQ"),
+                      "character"=c("BC", "BQ", "BZ", "CB", "CC", "CO", "CQ", "CR",
+                                    "CS", "CT", "CY", "E2", "FS", "LB", "MC", "MD",
+                                    "MI", "OA", "OC", "OQ", "OX", "PG", "PT", "PU",
+                                    "Q2", "QT", "QX", "R2", "RG", "RX", "SA", "TS",
+                                    "U2"))
+  bamTop100 <- Rsamtools::scanBam(Rsamtools::BamFile(file, yieldSize = 100),
+                                  param = Rsamtools::ScanBamParam(tag=unlist(possibleTag)))[[1]]$tag
+  tags <- names(bamTop100)[lengths(bamTop100)>0]
+
+  ## Load BAM file
+  gal <- ATACseqQC::readBamFile(file, tag=tags, asMates=FALSE, bigFile=TRUE)
+  meta <- metadata(gal)
+
+  ## Shift alignments using chunk sizes
+  index <- ifelse(length(meta$index)>0, meta$index, meta$file)
+  bamfile <- Rsamtools::BamFile(meta$file, index=index,
+                                yieldSize=chunk, asMates = meta$asMates)
+  outfile <- NULL
+  open(bamfile)
+  on.exit(close(bamfile))
+  # df4Duplicates <- NULL
+
+  while (length(chunk0 <- GenomicAlignments::readGAlignments(bamfile, param=meta$param))) {
+    # metadata(chunk0)$df4Duplicates <- df4Duplicates
+    gal1 <- ATACseqQC::shiftGAlignments(chunk0,
+                                        positive = positive,
+                                        negative = negative)
+    # if(length(metadata(gal1)$df4Duplicates)){
+    #   df4Duplicates <- read.csv(metadata(gal1)$df4Duplicates)
+    # }
+    outfile <- c(tempfile(fileext = ".bam"), outfile)
+    ATACseqQC:::exportBamFile(gal1, outfile[1])
+    rm(gal1)
+  }
+  close(bamfile)
+  on.exit()
+
+  ## Create merged files from outfiles
+  if(length(outfile)>1){
+    mergedfile <- Rsamtools::mergeBam(outfile,
+                                      destination=tempfile(fileext = ".bam"),
+                                      indexDestination=TRUE,
+                                      header=meta$file)
+    unlink(outfile)
+    unlink(paste0(outfile, ".bai"))
+  }else{
+    if(length(outfile)==1){
+      mergedfile <- outfile
+    }else{
+      stop("Can not get any proper mapped reads from  your inputs.")
+    }
+  }
+
+  ## Rename file to match outbam name
+  if(!missing(outbam)){
+    file.rename(from=mergedfile, to=outbam)
+    file.rename(from=paste0(mergedfile, ".bai"),
+                to=paste0(outbam, ".bai"))
+  }else{
+    gal1 <- GenomicAlignments::readGAlignments(mergedfile, param = meta$param)
+    mcols(gal1)$MD <- NULL
+    names(gal1) <- mcols(gal1)$qname
+    gal1 <- gal1[order(names(gal1))]
+    unlink(mergedfile)
+    unlink(paste0(mergedfile, ".bai"))
+  }
+  return(outbam)
+}
