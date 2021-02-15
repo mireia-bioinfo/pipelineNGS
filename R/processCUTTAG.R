@@ -40,6 +40,8 @@ processCUTTAG <- function(fastq_files,
                           bedtools_genomecov = "bedtools genomecov",
                           seacr = "SEACR_1.3.sh") {
 
+  if (type=="PE" & !is(fastq_files, "list")) fastq_files <- list(fastq_files)
+
   ## 0) Create directory tree -----------------------------
   dir.create(path_fastqc, F)
   dir.create(path_bam, F)
@@ -56,7 +58,7 @@ processCUTTAG <- function(fastq_files,
   files <- mapply(alignmentBowtie2,
                   file=fastq_files,
                   out_name=out_name,
-                  MoreArgs = list(type="PE",
+                  MoreArgs = list(type=type,
                                   index=index,
                                   out_dir=path_bam,
                                   path_logs=path_logs,
