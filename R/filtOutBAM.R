@@ -23,14 +23,20 @@ filtOutBAM <- function(file,
                        blacklist="~/data/consensusBlacklist.bed",
                        cores=6) {
 
+  ## Remove blacklisted regions if necessary
+  if (file.exists(blacklist)) {
+    rm_blacklist <- paste("| samtools view - -b -L", blacklist, "-U", gsub(".raw", ".tmp", file, fixed=TRUE), "-o trash.bam")
+  } else {
+    rm_blacklist <- paste("-o", gsub(".raw", ".tmp", file, fixed=TRUE))
+  }
+
   ## Select aligned, non-blacklisted and cannonical chr reads.
   message(paste0("[", format(Sys.time(), "%X"), "] ",
                  ">> Removing unaligned and blacklisted reads: ", file))
   cmd <- paste("samtools idxstats", file,
                "| cut -f 1 |", paste("grep -v", remove, collapse=" | "),
                "| xargs samtools view -b", file, "-@", cores-1, "-F 4", # select only mapped reads
-               "| samtools view - -b -L", blacklist, "-U", gsub(".raw", ".tmp", file, fixed=TRUE),
-               "-o trash.bam"
+               rm_blacklist
                )
   message(paste("\t", cmd))
   system(cmd)
