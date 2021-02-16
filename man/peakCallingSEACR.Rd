@@ -9,6 +9,7 @@ peakCallingSEACR(
   path_peaks,
   chr_sizes,
   cores = 5,
+  seacr_type = "stingent",
   bedtools_bamtobed = "bedtools bamtobed",
   bedtools_genomecov = "bedtools genomecov",
   seacr = "SEACR_1.3.sh"
@@ -20,6 +21,8 @@ peakCallingSEACR(
 \item{chr_sizes}{Chromosome sizes to use for bedgraph conversion.}
 
 \item{cores}{Number of threads to use for the analysis.}
+
+\item{seacr_type}{Type of peaks to call with SEACR, either "stringent" (default) or "relaxed."}
 
 \item{bedtools_bamtobed}{Path or alias of the bedtools bamtobed utility.}
 

@@ -17,6 +17,7 @@ processCUTTAG(
   remove = c("chrM", "chrUn", "_random", "_hap", "_gl", "EBV"),
   blacklist = "~/data/consensusBlacklist.bed",
   chr_sizes = "",
+  seacr_type = "stingent",
   cores = 8,
   bedtools_bamtobed = "bedtools bamtobed",
   bedtools_genomecov = "bedtools genomecov",
@@ -47,6 +48,8 @@ processCUTTAG(
 \item{blacklist}{List of blaclisted regions to remove from BAM file.}
 
 \item{chr_sizes}{Chromosome sizes to use for bedgraph conversion.}
+
+\item{seacr_type}{Type of peaks to call with SEACR, either "stringent" (default) or "relaxed."}
 
 \item{cores}{Number of threads to use for the analysis.}
 

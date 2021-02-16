@@ -12,6 +12,7 @@
 #' @param remove List of chromosomes to remove from final BAM file.
 #' @param blacklist List of blaclisted regions to remove from BAM file.
 #' @param chr_sizes Chromosome sizes to use for bedgraph conversion.
+#' @param seacr_type Type of peaks to call with SEACR, either "stringent" (default) or "relaxed."
 #' @param cores Number of threads to use for the analysis.
 #' @param bedtools_bamtobed Path or alias of the bedtools bamtobed utility.
 #' @param bedtools_genomecov Path or alias of the bedtools genomecov utility.
@@ -33,6 +34,7 @@ processCUTTAG <- function(fastq_files,
                           blacklist="~/data/consensusBlacklist.bed",
                           # 3) Peak calling
                           chr_sizes = "",
+                          seacr_type = "stingent",
                           # 4) Other params
                           cores=8,
                           # Program paths
@@ -81,6 +83,7 @@ processCUTTAG <- function(fastq_files,
                   path_peaks = path_peaks,
                   chr_sizes = chr_sizes,
                   cores = cores,
+                  seacr_type = seacr_type,
                   bedtools_bamtobed = bedtools_bamtobed,
                   bedtools_genomecov = bedtools_genomecov,
                   seacr = seacr)
@@ -90,14 +93,45 @@ processCUTTAG <- function(fastq_files,
 #' CUT&TAG peak calling with SEACR
 #'
 #' @inheritParams processCUTTAG
+#' @export
 peakCallingSEACR <- function(bam_file,
                              path_peaks,
                              chr_sizes,
                              cores = 5,
+                             seacr_type = "stingent", # or relaxed
                              bedtools_bamtobed = "bedtools bamtobed",
                              bedtools_genomecov = "bedtools genomecov",
                              seacr = "SEACR_1.3.sh") {
   message(paste0("[", format(Sys.time(), "%X"), "] ", ">> Starting Peak Calling with SEACR"))
+  name <- getNameFromPath(bam_file, suffix=".bam")
+  bam_dir <- dirname(bam_file)
+
+  ## 1) Convert bam files to bedgraph
+  if (!file.exists(file.path(bam_dir, paste0(name, ".bedgraph")))) {
+    .getBDGforSEACR(bam_file=bam_file,
+                    cores=cores,
+                    chr_sizes=chr_sizes,
+                    bedtools_bamtobed = bedtools_bamtobed,
+                    bedtools_genomecov=bedtools_genomecov)
+  }
+
+  ## 2) Call peaks with SEACR
+  cmd <- paste(seacr,
+               file.path(bam_dir, paste0(name, ".bedgraph")),
+               "0.01 norm", seacr_type,
+               file.path(path_peaks, paste0(name, ".peaks")))
+  message(paste("\t", cmd))
+  system(cmd)
+}
+
+#' Obtain bedgraph files for SEACR input
+#'
+#'  @inheritParams peakCallingSEACR
+.getBDGforSEACR <- function(bam_file,
+                            cores,
+                            chr_sizes,
+                            bedtools_bamtobed,
+                            bedtools_genomecov) {
   name <- getNameFromPath(bam_file, suffix=".bam")
   bam_dir <- dirname(bam_file)
 
@@ -115,12 +149,4 @@ peakCallingSEACR <- function(bam_file,
 
   ## Remove temporary files
   file.remove(file.path(bam_dir, paste0(name, ".bed")))
-
-  ## 2) Call peaks with SEACR
-  cmd <- paste(seacr,
-               file.path(bam_dir, paste0(name, ".bedgraph")),
-               "0.01 norm stringent",
-               file.path(path_peaks, paste0(name, ".peaks")))
-  message(paste("\t", cmd))
-  system(cmd)
 }
