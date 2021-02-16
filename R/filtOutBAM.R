@@ -71,7 +71,8 @@ filtOutBAM <- function(file,
 
   ## Remove temporary files
   file.remove("trash.bam",
-              input_rmdup)
+              gsub(".raw", ".fixmate", file, fixed=TRUE),
+              gsub(".raw", ".tmp", file, fixed=TRUE))
 
   return(invisible(gsub(".raw", "", file, fixed=TRUE)))
 }
