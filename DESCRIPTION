@@ -8,15 +8,9 @@ License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
 Imports:
-	biomaRt,
 	cowplot,
 	ggplot2,
-	gridExtra,
-	dplyr,
-	ChIPpeakAnno,
-	GenomicRanges,
-	org.Hs.eg.db,
-	rentrez,
+	dplyr
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
