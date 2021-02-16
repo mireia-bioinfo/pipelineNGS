@@ -7,6 +7,7 @@
 #' @param path_peaks Path where the peaks are saved.
 #' @param peak_suffix Type of the peak files, either narrowPeak or broadPeak
 #' @return Data.frame with some alignment and processing statistics for all the input samples.
+#' When files are PE, it returns the total number of mates, not reads.
 #' @export
 #' @examples
 #' \dontrun{
