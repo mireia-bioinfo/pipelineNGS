@@ -113,7 +113,9 @@ peakCallingSEACR <- function(bam_file,
                ">", file.path(bam_dir, paste0(name, ".bedgraph")))
   system(cmd)
 
-  cmd <- paste()
+  ## Remove temporary files
+  file.remove(file.path(bam_dir, paste0(name, ".bed")))
+
   ## 2) Call peaks with SEACR
   cmd <- paste(seacr,
                file.path(bam_dir, paste0(name, ".bedgraph")),
