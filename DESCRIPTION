@@ -1,7 +1,7 @@
 Package: pipelineNGS
 Title: Methods for Sequencing Data Processing and Analysis
 Version: 0.0.0.9000
-Authors@R: person("Mireia", "Ramos-Rodriguez", email = "mireiarr9@gmail.com", role = c("aut", "cre"))
+Authors@R: person("Mireia", "Ramos-Rodriguez", email = "mireia.ramos@upf.edu", role = c("aut", "cre"))
 Description: This package provides functions for processing FASTQ files and doing the downstream analysis, such as peak calling, conversion to bigWig format or motif analysis.
 Depends: R (>= 4.0.0)
 License: Artistic-2.0
@@ -10,7 +10,10 @@ LazyData: true
 Imports:
 	cowplot,
 	ggplot2,
-	dplyr
+	dplyr,
+	S4Vectors,
+	Rsamtools,
+	rtracklayer
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
