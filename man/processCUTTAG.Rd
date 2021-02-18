@@ -18,6 +18,7 @@ processCUTTAG(
   blacklist = "~/data/consensusBlacklist.bed",
   chr_sizes = "",
   seacr_type = "stingent",
+  seacr_top = 0.01,
   cores = 8,
   bedtools_bamtobed = "bedtools bamtobed",
   bedtools_genomecov = "bedtools genomecov",
@@ -25,11 +26,13 @@ processCUTTAG(
 )
 }
 \arguments{
-\item{fastq_files}{List containing the different FastQ file pairs (one list element for each sample).}
+\item{fastq_files}{List containing the different FastQ file pairs (one list
+element for each sample).}
 
 \item{out_name}{Sample name to use for each of the samples.}
 
-\item{type}{Character indicating if reads are paired end (PE) or single end (SE).}
+\item{type}{Character indicating if reads are paired end (PE) or single end
+(SE).}
 
 \item{run_fastqc}{Logical indicating whether to run FastQC or not.}
 
@@ -49,7 +52,11 @@ processCUTTAG(
 
 \item{chr_sizes}{Chromosome sizes to use for bedgraph conversion.}
 
-\item{seacr_type}{Type of peaks to call with SEACR, either "stringent" (default) or "relaxed."}
+\item{seacr_type}{Type of peaks to call with SEACR, either "stringent"
+(default) or "relaxed."}
+
+\item{seacr_top}{A numeric threshold n between 0 and 1 returns the top n
+fraction of peaks based on total signal within peaks. Default: 0.01.}
 
 \item{cores}{Number of threads to use for the analysis.}
 

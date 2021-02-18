@@ -17,18 +17,15 @@ vignette: |
 
 # Introduction
 
-C&T description
+[C&T description]
 
 ```{r ct-description, echo=FALSE, fig.cap="Differences between immunoprecipitation and in antibody-targeted chromatin profiling strategies. A. ChIP-seq experimental procedure. B. CUT&Tag experimental procedure. Cells and nuclei are indicated in grey, chromatin as red nucleosomes, and a specific chromatin protein in green."}
 knitr::include_graphics("https://yezhengstat.github.io/CUTTag_tutorial/figures/ChIPseqCUTTag.png")
 ```
 
+Recommended CUT&TAG pipeline: https://yezhengstat.github.io/CUTTag_tutorial/
 
-Recommended C&T pipeline: https://yezhengstat.github.io/CUTTag_tutorial/
-
-# Pipeline description
-
-## Pre-requisites
+# Pre-requisites
 
 - **Bowtie2**[^bowtie2] (version 2.4.1).
 - **Samtools**[^samtools] (version 1.10).
@@ -39,6 +36,8 @@ Recommended C&T pipeline: https://yezhengstat.github.io/CUTTag_tutorial/
 [^samtools]: http://www.htslib.org/
 [^bedtools]: https://bedtools.readthedocs.io/en/latest/
 [^SEACR]: https://github.com/FredHutch/SEACR
+
+# Pipeline description
 
 ## FastQ Quality Control with FastQC
 

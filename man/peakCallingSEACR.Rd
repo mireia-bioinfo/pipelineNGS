@@ -10,6 +10,7 @@ peakCallingSEACR(
   chr_sizes,
   cores = 5,
   seacr_type = "stingent",
+  seacr_top = 0.01,
   bedtools_bamtobed = "bedtools bamtobed",
   bedtools_genomecov = "bedtools genomecov",
   seacr = "SEACR_1.3.sh"
@@ -22,7 +23,11 @@ peakCallingSEACR(
 
 \item{cores}{Number of threads to use for the analysis.}
 
-\item{seacr_type}{Type of peaks to call with SEACR, either "stringent" (default) or "relaxed."}
+\item{seacr_type}{Type of peaks to call with SEACR, either "stringent"
+(default) or "relaxed."}
+
+\item{seacr_top}{A numeric threshold n between 0 and 1 returns the top n
+fraction of peaks based on total signal within peaks. Default: 0.01.}
 
 \item{bedtools_bamtobed}{Path or alias of the bedtools bamtobed utility.}
 

@@ -1,8 +1,10 @@
 #' Automated processing of CUT&TAG samples
 #'
-#' @param fastq_files List containing the different FastQ file pairs (one list element for each sample).
+#' @param fastq_files List containing the different FastQ file pairs (one list
+#' element for each sample).
 #' @param out_name Sample name to use for each of the samples.
-#' @param type Character indicating if reads are paired end (PE) or single end (SE).
+#' @param type Character indicating if reads are paired end (PE) or single end
+#' (SE).
 #' @param run_fastqc Logical indicating whether to run FastQC or not.
 #' @param path_fastqc Path for the FastQC results.
 #' @param path_bam Path for the aligment and filtering results.
@@ -12,7 +14,10 @@
 #' @param remove List of chromosomes to remove from final BAM file.
 #' @param blacklist List of blaclisted regions to remove from BAM file.
 #' @param chr_sizes Chromosome sizes to use for bedgraph conversion.
-#' @param seacr_type Type of peaks to call with SEACR, either "stringent" (default) or "relaxed."
+#' @param seacr_type Type of peaks to call with SEACR, either "stringent"
+#' (default) or "relaxed."
+#' @param seacr_top A numeric threshold n between 0 and 1 returns the top n
+#' fraction of peaks based on total signal within peaks. Default: 0.01.
 #' @param cores Number of threads to use for the analysis.
 #' @param bedtools_bamtobed Path or alias of the bedtools bamtobed utility.
 #' @param bedtools_genomecov Path or alias of the bedtools genomecov utility.
@@ -35,6 +40,7 @@ processCUTTAG <- function(fastq_files,
                           # 3) Peak calling
                           chr_sizes = "",
                           seacr_type = "stingent",
+                          seacr_top = 0.01,
                           # 4) Other params
                           cores=8,
                           # Program paths
@@ -84,6 +90,7 @@ processCUTTAG <- function(fastq_files,
                   chr_sizes = chr_sizes,
                   cores = cores,
                   seacr_type = seacr_type,
+                  seacer_top = seacr_top,
                   bedtools_bamtobed = bedtools_bamtobed,
                   bedtools_genomecov = bedtools_genomecov,
                   seacr = seacr)
@@ -99,6 +106,7 @@ peakCallingSEACR <- function(bam_file,
                              chr_sizes,
                              cores = 5,
                              seacr_type = "stingent", # or relaxed
+                             seacr_top = 0.01,
                              bedtools_bamtobed = "bedtools bamtobed",
                              bedtools_genomecov = "bedtools genomecov",
                              seacr = "SEACR_1.3.sh") {
@@ -118,8 +126,8 @@ peakCallingSEACR <- function(bam_file,
   ## 2) Call peaks with SEACR
   cmd <- paste(seacr,
                file.path(bam_dir, paste0(name, ".bedgraph")),
-               "0.01 norm", seacr_type,
-               file.path(path_peaks, paste0(name, ".peaks")))
+               seacr_top, "norm", seacr_type,
+               file.path(path_peaks, paste0(name, ".peaks.", seacr_top)))
   message(paste("\t", cmd))
   system(cmd)
 }
