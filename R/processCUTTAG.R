@@ -90,7 +90,7 @@ processCUTTAG <- function(fastq_files,
                   chr_sizes = chr_sizes,
                   cores = cores,
                   seacr_type = seacr_type,
-                  seacer_top = seacr_top,
+                  seacr_top = seacr_top,
                   bedtools_bamtobed = bedtools_bamtobed,
                   bedtools_genomecov = bedtools_genomecov,
                   seacr = seacr)
