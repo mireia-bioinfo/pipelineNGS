@@ -58,8 +58,8 @@ alignmentBowtie2 <- function(file,
     al_fastq <- paste("-U", paste0(file, collapse=" "))
   } else if (type=="PE") { ## Align paired end file
     if (length(file)>2) stop("Incorrect number of files, should be 2 for paired-end alignment.")
-    al_fastq <- paste("-1", paste0(file[[1]], collapse=" "),
-                      "-2", paste0(file[[2]], collapse=" "))
+    al_fastq <- paste("-1", paste0(unlist(file[1]), collapse=" "),
+                      "-2", paste0(unlist(file[2]), collapse=" "))
   }
 
   ## Start alignment
