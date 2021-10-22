@@ -4,14 +4,14 @@
 \alias{getNameFromPath}
 \title{Get name from path}
 \usage{
-getNameFromPath(path, suffix = NULL, prefix = NULL)
+getNameFromPath(path, prefix = NULL, suffix = NULL)
 }
 \arguments{
 \item{path}{Character string or vector with the path.}
 
-\item{suffix}{Characer string with the suffix you want to remove from the filename. For example: ".bam"}
-
 \item{prefix}{Character string with the prefix you want to remove from the filename. For example: "ATAC_"}
+
+\item{suffix}{Characer string with the suffix you want to remove from the filename. For example: ".bam"}
 }
 \value{
 A character string or vector with the filename.
