@@ -34,9 +34,7 @@ library(pipelineNGS)
 
 ## Quick start
 
-**Warning**: In our current linux machines, we will need to use a python environment to run Macs2. The code in the following section should be saved in an Rscript and run from the terminal **after** running the command `activate-macs-git-2017.5.15`.
-
-### Running pipelineNGS with H3K27ac ChIP-seq data
+### Running pipelineNGS with H3K27ac ChIP-seq data (SE)
 
 Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
 
@@ -70,11 +68,10 @@ save(stats, file="Logs/stats_samples.rda")
 From the terminal run the following commands: 
 
 ```
-$ activate-macs-git-2017.5.15
 $ Rscript process_samples.R
 ```
 
-### Running pipelineNGS with ATAC-seq data
+### Running pipelineNGS with ATAC-seq data (SE)
 
 Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
 
@@ -108,6 +105,5 @@ save(stats, file="Logs/stats_samples.rda")
 From the terminal run the following commands: 
 
 ```
-$ activate-macs-git-2017.5.15
 $ Rscript process_samples.R
 ```
