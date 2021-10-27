@@ -14,15 +14,17 @@ filtOutBAM(
 )
 }
 \arguments{
-\item{file}{Filenme and path for the BAM file to be filter out.}
+\item{file}{Filenme and path for the BAM file to be filtered out.}
 
-\item{path_logs}{Path for the output logs.}
+\item{path_logs}{Character indicating the output directory for the logs.}
 
-\item{type}{Either "SE" (single end) or "PE" (paired end).}
+\item{type}{Sequence type, one of "SE" (single end) or "PE" (paired end).}
 
-\item{remove}{List of regular expressions to filter out from chromosome names.}
+\item{remove}{Character vector with chr that will be filtered out. Any chromosome
+name containing matches for these characters will be removed.}
 
-\item{blacklist}{Path for ENCODE blacklist in bed format.}
+\item{blacklist}{Character indicating the file containing blacklist regions in
+bed format. Any reads overlapping these regions will be discarded.}
 
 \item{cores}{Number of cores to use for the analysis.}
 }
@@ -31,7 +33,7 @@ File without the ".raw" preffix containing the final reads, along with its index
 Also returns invisibly the name of the output file.
 }
 \description{
-Function that filters out the following reads: 1) aligned no non-cannonical chromosomes, 2) not aligned, 3) aligned to ENCODE black-listed regions and 3) duplicated reads.
+Function that filters out the following reads: 1) aligned no non-cannonical chromosomes, 2) not aligned, 3) aligned to ENCODE blacklisted regions and 3) duplicated reads.
 }
 \examples{
 \dontrun{

@@ -48,6 +48,7 @@ processCUTTAG <- function(fastq_files,
                           bedtools_genomecov = "bedtools genomecov",
                           seacr = "SEACR_1.3.sh") {
 
+  # Convert PE vector to list, in case only 1 sample is provided
   if (type=="PE" & !is(fastq_files, "list")) fastq_files <- list(fastq_files)
 
   ## 0) Create directory tree -----------------------------
@@ -57,10 +58,9 @@ processCUTTAG <- function(fastq_files,
   dir.create(path_logs, F)
 
   ## 1) Quality control with FastQC -----------------------
-  if (run_fastqc) {
-    fastqc(files=unlist(fastq_files),
-           out_dir=path_fastqc)
-  }
+  if (run_fastqc) fastqc(files=unlist(fastq_files),
+                         path_fastqc=path_fastqc,
+                         cores = cores)
 
   ## 2) Alignment with Bowtie2 ----------------------------
   files <- mapply(alignmentBowtie2,
@@ -68,10 +68,10 @@ processCUTTAG <- function(fastq_files,
                   out_name=out_name,
                   MoreArgs = list(type=type,
                                   index=index,
-                                  out_dir=path_bam,
+                                  path_bam=path_bam,
                                   path_logs=path_logs,
                                   cores=cores,
-                                  "--end-to-end --very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700")
+                                  extra_bowtie2="--end-to-end --very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700")
   )
 
   ## 3) Post-processing with Samtools ----------------------

@@ -1,12 +1,9 @@
 #' Filter out reads from BAM file
 #'
-#' Function that filters out the following reads: 1) aligned no non-cannonical chromosomes, 2) not aligned, 3) aligned to ENCODE black-listed regions and 3) duplicated reads.
-#' @param file Filenme and path for the BAM file to be filter out.
-#' @param path_logs Path for the output logs.
-#' @param type Either "SE" (single end) or "PE" (paired end).
-#' @param remove List of regular expressions to filter out from chromosome names.
-#' @param blacklist Path for ENCODE blacklist in bed format.
+#' Function that filters out the following reads: 1) aligned no non-cannonical chromosomes, 2) not aligned, 3) aligned to ENCODE blacklisted regions and 3) duplicated reads.
+#' @param file Filenme and path for the BAM file to be filtered out.
 #' @param cores Number of cores to use for the analysis.
+#' @inheritParams process_epigenome
 #' @return File without the ".raw" preffix containing the final reads, along with its index (.bai).
 #' Also returns invisibly the name of the output file.
 #' @export

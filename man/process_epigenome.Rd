@@ -6,37 +6,103 @@
 \usage{
 process_epigenome(
   fastq_files,
-  seq_type = "ATAC",
-  run_fastqc = TRUE,
+  out_name = NULL,
+  seq_type = c("ATAC", "CHIP"),
+  type = "SE",
+  suffix_fastq = NULL,
+  cores = 8,
   path_fastqc = "FastQC/",
   path_bam = "BAM/",
   path_peaks = "Peaks/",
   path_logs = "Logs/",
-  out_name = NULL,
-  suffix_fastq = NULL,
-  type = "SE",
-  index = "/biodata/indices/species/Hsapiens/ucsc.hg19",
+  run_fastqc = TRUE,
+  index = "/vault/refs/indexes/hg38",
+  extra_bowtie2 = "",
   remove = c("chrM", "chrUn", "_random", "_hap", "_gl", "EBVls"),
-  blacklist = "~/data/consensusBlacklist.bed",
-  peak_type = NULL,
-  shift = NULL,
-  cores = 8,
-  chunk = 1e+07
+  blacklist = "/vault/refs/hg38-blacklist.v2.bed",
+  peak_type = c("narrow", "broad"),
+  shift = FALSE,
+  chunk = 1e+07,
+  gen_sizes = "/vault/refs/hg38.chromSizes.txt"
 )
 }
 \arguments{
-\item{fastq_files}{Path and filenames for the fastq files to be analyzed.}
+\item{fastq_files}{Character string (single-end) or character vector of
+length 2 (paired-end) with the file names of the samples to be analysed.}
 
-\item{seq_type}{Type of sequencing, either ATAC (default) or CHIP.}
+\item{out_name}{Character vector, with the same length as \code{fastq_files},
+indicating the output filenames.}
 
-\item{path_fastqc}{Path for the FastQC output.}
+\item{seq_type}{Experiment type, either "ATAC" (default) or "CHIP".}
 
-\item{path_bam}{Path for the output BAM files.}
+\item{type}{Sequence type, one of "SE" (single end) or "PE" (paired end).}
 
-\item{chunk}{Size of the chunk to lead into memory for ATAC-seq read offset.}
+\item{suffix_fastq}{Character indcating the suffix for the fastq files, for
+example ".fq.gz" or ".fastq.gz".}
+
+\item{cores}{Number of threads to use for the analysis.}
+
+\item{path_fastqc}{Character indicating the output directory for the FastQC reports.}
+
+\item{path_bam}{Character indicating the output directory for the bam files.}
+
+\item{path_peaks}{Character indicating the output directory for the peak files.}
+
+\item{path_logs}{Character indicating the output directory for the logs.}
+
+\item{run_fastqc}{Logical indcating whether to run (TRUE) or not (FALSE) FastQC. Default: TRUE.}
+
+\item{index}{Character indicating the location and basename for the
+\href{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#the-bowtie2-build-indexer}{Bowtie2 index}.}
+
+\item{extra_bowtie2}{Character containing additional arguments to be passed to
+bowtie2 alignment call.}
+
+\item{remove}{Character vector with chr that will be filtered out. Any chromosome
+name containing matches for these characters will be removed.}
+
+\item{blacklist}{Character indicating the file containing blacklist regions in
+bed format. Any reads overlapping these regions will be discarded.}
+
+\item{peak_type}{Character indicating the type of peak to be called with
+MACS2, either "narrow" or "broad".}
+
+\item{shift}{Logical indicating whether the reads should be shifted -100bp
+and extended to 200bp (TRUE) or not (FALSE, default).}
+
+\item{chunk}{Size of the chunk to load into memory for ATAC-seq read offset.
+This argument is necessary only when \code{type="SE"}.}
+
+\item{gen_sizes}{Character string indicating the path where the file with
+chromosome name and sizes can be found. This argument is necessary only when \code{type="SE"}.}
+}
+\value{
+Creates the folders \code{path_fastqc}, \code{path_bam}, \code{path_peaks}, \code{path_logs},
+by default in your working directory, containing the output files from de different
+analyses.
 }
 \description{
 This function performs all necessary steps in the ChIP-seq processing pipeline.
+}
+\details{
+This function ocesses ATAC-seq or ChIP-seq from FastQ files using
+the following pipeline:
+\enumerate{
+\item Quality Control (FastQC).
+\item Alignment to reference genome (Bowtie2).
+\item Post-processing (Samtools), including removing duplicates, blacklisted
+regions and non-reference chromosomes.
+\item (only for ATAC-seq) Offset correction (Samtools).
+\item Peak calling (MACS2).
+}
+
+This function can process paired and single end FastQ files:
+\itemize{
+\item Single end files. The argument \code{fastq_files} should be a character vector with the name
+of each file.
+\item Paired end files. The argument \code{fastq_files} should be a list, where each element is a
+vector of size 1, where the first one is the R1 and the second one is the R2.
+}
 }
 \examples{
 \dontrun{

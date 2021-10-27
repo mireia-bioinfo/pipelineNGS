@@ -7,55 +7,57 @@
 alignmentBowtie2(
   file,
   out_name = NULL,
-  suffix_fastq = NULL,
   type = "SE",
-  out_dir = "bam/",
+  suffix_fastq = NULL,
   cores = 6,
-  index = "/biodata/indices/species/Hsapiens/ucsc.hg19",
+  index = "/vault/refs/indexes/hg38",
+  path_bam = "bam/",
   path_logs = "logs/",
-  run = TRUE,
-  ...
+  extra_bowtie2 = "",
+  run = TRUE
 )
 }
 \arguments{
-\item{file}{Character string (single-end) or character vector (paired-end) with the path and
-filename of the sample to be analyzed.}
+\item{file}{Character string (single-end) or character vector of
+length 2 (paired-end) with the file names of the samples to be analysed.}
 
-\item{out_name}{Character string indicating the name for the output file. If not provided, will use
-suffix_fastq to remove the suffix and use the same name as fastq file.}
+\item{out_name}{Character vector, with the same length as \code{fastq_files},
+indicating the output filenames.}
 
-\item{suffix_fastq}{Character vector indicating the suffix to remove from fastq file in order to
-generate output sam file. Only necessary if out_name is not provided. If this is a paired end sample
-it should also include the name of read 1 (example: "_read1.fastq.gz").}
+\item{type}{Sequence type, one of "SE" (single end) or "PE" (paired end).}
 
-\item{type}{Character string with the type of approach used for the sequencing, either "SE" (default) or "PE".}
+\item{suffix_fastq}{Character indcating the suffix for the fastq files, for
+example ".fq.gz" or ".fastq.gz".}
 
-\item{out_dir}{Character string indicating the path where the final bam files should be stored.}
+\item{cores}{Number of threads to use for the analysis.}
 
-\item{cores}{Integer indicating the number of cores to use for the analysis.}
+\item{index}{Character indicating the location and basename for the
+\href{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#the-bowtie2-build-indexer}{Bowtie2 index}.}
 
-\item{index}{Character string with the path and name for the Bowtie2 index as specified in Bowtie2 manual.}
+\item{path_bam}{Character indicating the output directory for the bam files.}
 
-\item{path_logs}{Character string with the path for the logs to be stored.}
+\item{path_logs}{Character indicating the output directory for the logs.}
+
+\item{extra_bowtie2}{Character containing additional arguments to be passed to
+bowtie2 alignment call.}
 
 \item{run}{Logical indicating whether to run the alignment (for testing purposes). Default: TRUE}
-
-\item{...}{Further arguments to be passed to Bowtie2 call.}
 }
 \value{
-Writes "out_name.raw.bam" in out_dir. Also generates a log for the alignment (sample.alignment.log) in your path_logs.
+Writes \code{out_name.raw.bam} in \code{path_bam}. Also generates a log for the alignment (\code{sample.alignment.log}) in your \code{path_logs}.
 }
 \description{
-Aligns FastQ files to a reference genome using Bowtie2, converts the output to BAM, sorts it
-according to genomic position and indexes the final BAM file.
+Aligns FastQ files to a reference genome using \href{http://bowtie-bio.sourceforge.net/bowtie2/index.shtml}{Bowtie2},
+converts the output to BAM, sorts it according to genomic position and
+indexes the final BAM file.
 }
 \examples{
 \dontrun{
 alignmentBowtie2(file=paste0(path, "fastq/NL1_h3k27ac_sample.fastq.gz"),
                  suffix_fastq=".fastq.gz",
                  type="SE",
-                 index=" /biodata/indices/species/Hsapiens/ucsc.hg19",
-                 out_dir=paste0(path, "bam/"),
+                 index="/vault/refs/indexes/hg38",
+                 path_bam=paste0(path, "bam/"),
                  path_logs=paste0(path, "logs/"),
                  cores=6,
                  run=FALSE)

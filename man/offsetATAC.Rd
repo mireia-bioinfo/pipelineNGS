@@ -4,14 +4,15 @@
 \alias{offsetATAC}
 \title{Offset correction for ATAC-seq data}
 \usage{
-offsetATAC(file, cores = 6, gen_sizes = "~/data/hg19.len")
+offsetATAC(file, cores = 6, gen_sizes = "/vault/refs/hg38.chromSizes.txt")
 }
 \arguments{
 \item{file}{Character string with the filename and path for the BAM file.}
 
-\item{cores}{Number of cores to use for the processing.}
+\item{cores}{Number of threads to use for the analysis.}
 
-\item{gen_sizes}{Character string indicating the path where the file with chromosome name and sizes can be found. Default value: "~/data/hg19.len"}
+\item{gen_sizes}{Character string indicating the path where the file with
+chromosome name and sizes can be found. This argument is necessary only when \code{type="SE"}.}
 }
 \value{
 Returns the final BAM file, sorted and indexed, in path_bam.

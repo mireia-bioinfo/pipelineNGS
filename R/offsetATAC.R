@@ -2,8 +2,7 @@
 #'
 #' It performs the offset correction needed for ATAC-seq data: +4bp in forward strand; -5bp in reverse strand.
 #' @param file Character string with the filename and path for the BAM file.
-#' @param cores Number of cores to use for the processing.
-#' @param gen_sizes Character string indicating the path where the file with chromosome name and sizes can be found. Default value: "~/data/hg19.len"
+#' @inheritParams process_epigenome
 #' @return Returns the final BAM file, sorted and indexed, in path_bam.
 #' @export
 #' @examples
@@ -12,7 +11,7 @@
 #' }
 offsetATAC <- function(file,
                        cores=6,
-                       gen_sizes="~/data/hg19.len") {
+                       gen_sizes="/vault/refs/hg38.chromSizes.txt") {
   message(paste0("[", format(Sys.time(), "%X"), "] ", ">> Offset correction Tn5: ", file))
 
   ## Offset correction
@@ -39,9 +38,9 @@ offsetATAC <- function(file,
 #'
 #' It performs offset corrrection on single end ATAC-seq files.
 #' @param file Path for the BAM file.
-#' @param chunk Size of the read chunk to load into memory.
 #' @param positive Positive offset: 4.
 #' @param negative Negative offset: 5.
+#' @inheritParams process_epigenome
 #' @importClassesFrom Rsamtools BamFile
 #' @importMethodsFrom S4Vectors metadata
 #' @importFrom rtracklayer export
@@ -78,16 +77,11 @@ offsetATACSE <- function(file,
   outfile <- NULL
   open(bamfile)
   on.exit(close(bamfile))
-  # df4Duplicates <- NULL
 
   while (length(chunk0 <- GenomicAlignments::readGAlignments(bamfile, param=meta$param))) {
-    # metadata(chunk0)$df4Duplicates <- df4Duplicates
     gal1 <- ATACseqQC::shiftGAlignments(chunk0,
                                         positive = positive,
                                         negative = negative)
-    # if(length(metadata(gal1)$df4Duplicates)){
-    #   df4Duplicates <- read.csv(metadata(gal1)$df4Duplicates)
-    # }
     outfile <- c(tempfile(fileext = ".bam"), outfile)
     ATACseqQC:::exportBamFile(gal1, outfile[1])
     rm(gal1)

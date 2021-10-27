@@ -9,7 +9,8 @@ offsetATACSE(file, chunk = 1e+06, positive = 4L, negative = 5L)
 \arguments{
 \item{file}{Path for the BAM file.}
 
-\item{chunk}{Size of the read chunk to load into memory.}
+\item{chunk}{Size of the chunk to load into memory for ATAC-seq read offset.
+This argument is necessary only when \code{type="SE"}.}
 
 \item{positive}{Positive offset: 4.}
 
