@@ -20,9 +20,7 @@ fastqc <- function(files,
   message(">> Quality Control with FastQC")
   dir.create(path_fastqc, F)
 
-  run <- lapply(files, function(f) {
-    message(paste("----", f))
-    cmd <- paste("fastqc", f, "-o", path_fastqc, "-t", cores)
-    system(cmd)
-  })
+  cmd <- paste("fastqc", "-o", path_fastqc, "-t", cores, paste0(files, collapse=" "))
+  print(cmd)
+  system(cmd)
 }
