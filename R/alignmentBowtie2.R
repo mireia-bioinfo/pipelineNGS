@@ -45,7 +45,6 @@ alignmentBowtie2 <- function(file,
 
   ## Check single-end or paired-end input
   if (type=="SE") { ## Align single end file
-    if (length(file)>1) stop("Incorrect number of files, should be 1 for single-end alignment.")
     al_fastq <- paste("-U", paste0(file, collapse=" "))
   } else if (type=="PE") { ## Align paired end file
     if (length(file)>2) stop("Incorrect number of files, should be 2 for paired-end alignment.")
