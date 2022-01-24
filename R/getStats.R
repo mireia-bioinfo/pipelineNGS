@@ -34,21 +34,31 @@ getStats <- function(path_logs="Logs/",
                             peak_suffix) {
 
   # Alignment stats from log file -----
-  log <- readLines(con = file.path(path_logs, paste0(name, ".alignment.log")))
+  al_log <- file.path(path_logs, paste0(name, ".alignment.log"))
+  if (file.exists(al_log)) {
+    log <- readLines(con = al_log)
 
-  if (!any(grepl("unpaired", log))) {   # If stats are from PE file
-    stats <- .parseBowtie2LogPE(file.path(path_logs, paste0(name, ".alignment.log")))
-  } else { # If stats are from SE file
-    stats <- .parseBowtie2LogSE(file.path(path_logs, paste0(name, ".alignment.log")))
+    if (!any(grepl("unpaired", log))) {   # If stats are from PE file
+      stats <- .parseBowtie2LogPE(file.path(path_logs, paste0(name, ".alignment.log")))
+    } else { # If stats are from SE file
+      stats <- .parseBowtie2LogSE(file.path(path_logs, paste0(name, ".alignment.log")))
+    }
+
+    total_reads <- stats$total
+    total_aligned <- stats$unique + stats$multi
+    alignment_rate <- total_aligned/total_reads*100
+
+  } else {
+    total_reads <- NA
+    total_aligned <- NA
+    alignment_rate <- NA
   }
-
-  total_reads <- stats$total
-  total_aligned <- stats$unique + stats$multi
-  alignment_rate <- total_aligned/total_reads*100
 
   # Chr stats
   idxstats <- tableFromIdxstats(file.path(path_logs, paste0(name, ".raw.idxstats.log")))
   chrM <- idxstats$aligned[idxstats$chr=="chrM"]
+
+  if (is.na(total_aligned)) total_aligned <- sum(idxstats$aligned)
 
   # Get duplicates stats
   if (file.exists(file.path(path_logs, paste0(name, ".rmdup.log")))) {
