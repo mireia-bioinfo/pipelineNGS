@@ -7,7 +7,7 @@ output:
     fig.align: "center"
     self.contained: TRUE
 vignette: >
-  %\VignetteIndexEntry{Analyzing UMI-4C data}
+  %\VignetteIndexEntry{Processing Sequencing data with pipelineNGS}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -42,66 +42,68 @@ Mandatory for ATAC-seq offset correction and SEACR peak calling:
 
 ## Recommended directory organization
 
-I recommend you create a data directory within your project with the following structure: - Data directory: `data/` - 1 folder for each type of experiment: `ATAC-seq`; `ChiP-seq`. - `BAM/` output BAM files from alignment and post-processing. - `Logs/` directory where the log outputs from different programs are saved. - `Visualization/` directory to output the visualization files (bigWig and bedGraphs). - `Peaks/` directory with `.narrowPeak`, `.broadPeak` and other files created by the peak calling analysis.
+I recommend you create a data directory within your project with the following structure:
+
+-   Data directory: `data/`
+    -   1 folder for each type of experiment: `ATAC-seq`; `ChiP-seq`.
+        -   `BAM/` output BAM files from alignment and post-processing.
+        -   `Peaks/` directory with `.narrowPeak`, `.broadPeak` and other files created by the peak calling analysis.
+        -   `Logs/` directory where the log outputs from different programs are saved.
+        -   `Visualization/` directory to output the visualization files (bigWig and bedGraphs).
 
 # Pipeline Overview
 
-For the purpose of this vignette we are going to focus on analyzing ATAC-seq and ChIP-seq data because, in general, the steps needed for processing this data are the same.
+In this package we currently have implemented the pipelines for analyzing the following experiments:
 
-In the following figure you can see a description of the steps needed for the analysis of each type of experiment, and the functions provided in this package that perform each one of the steps.
+-   ATAC-seq (`ATAC`).
+-   ChIP-seq for histone marks (`CHIP`).
+-   CUT&TAG for histone marks (`CT`).
+
+In the following figure you can see a description of the steps needed for the analysis of each type of experiment, with specific arguments (if any) used in the different steps.
 
 ```{r, echo=FALSE}
-knitr::include_graphics("figures/align_postpro.png", dpi=100)
+knitr::include_graphics("figures/process_epi_map.png")
 ```
 
-## Quick example reference
+All these steps are implemented in a single function called `process_epigenome()`. Critical parameters for this function are the following:
 
-> The input names for the pipeline should be the name of the samples without any suffix. A suffix specific for each analysis and type of file will be added in each step of the analysis.
+-   `fastq_files`. In this argument you must provide as a character vector (only when reads are single end and each file corresponds to a single sample) or a list the complete paths for the fastq files you wish to process. A list input is mandatory for paired-end samples (each element of the list contains paths to R1 and R2), however you can use lists for single end reads if you have several files for a single sample that has been sequenced in different lines:
 
-```{r}
-##-------------------------------------------------------
-## Input data
-##-------------------------------------------------------
-# Input sample names (without any suffix)
-samples <- c("ctrl-2", "mut-2", "mut-3", "mut-4")
+```{r example-fastq-input}
+## Example Paired End ##
+fastq_files <- c("fastq/sample1_L1_R1.fastq.gz", "fastq/sample1_L2_R1.fastq.gz",
+                 "fastq/sample1_L1_R2.fastq.gz", "fastq/sample1_L2_R2.fastq.gz",
+                 "fastq/sample2_L1_R1.fastq.gz", "fastq/sample2_L1_R2.fastq.gz")
 
-# Input folders
-path_bam <- "BAM/"
-path_fastq <- "raw/"
-logs <- "logs/"
-vis <- "visualization/"
-pc <- "peak_calling_shift/"
+## Convert to list to use as input for process_epigenome()
+# Create one list element for each simple
+names <- sapply(strsplit(basename(fastq_files), "_"), function(x) x[1])
+fastq_list <- split(fastq_files, names)
 
-##-------------------------------------------------------
-## Run functions
-##-------------------------------------------------------
-# Load alignment library
-library(pipelineNGS)
+# Make lists with R1 and R2 inside each sample
+fastq_input <- lapply(fastq_list, function(x) list(R1=x[grepl("_R1.fastq.gz", x)],
+                                    R2=x[grepl("_R2.fastq.gz", x)]))
+fastq_input
 
-# Alignment
-alignmentBowtie2(samples, path_bam=path_bam, path_fastq=path_fastq, 
-                 suffix_fastq=".fastq.gz", path_logs=logs)
- 
-# Post-processing ATAC-seq
-samToBam(samples, path_bam=path_bam, path_logs=logs)
-sortAndStats(samples, path_bam=path_bam, path_logs=logs,
-            input_suf=".uns.raw.bam", output_suf=".raw.bam")
-filterOutReads(samples, path_bam=path_bam, path_logs=logs)
-removeDuplicates(samples, path_bam=path_bam, path_logs=logs)
-offsetATAC(samples, path_bam=path_bam, path_logs=logs)
-sortAndStats(samples, path_bam=path_bam, path_logs=logs,
-             input_suf=".rmdup.bam", output_suf=".noOffset.bam")
-summarizeLogs(out_name="summary", path_logs=logs)
+## Example Single End ##
+fastq_files <- c("fastq/sample1_L1.fastq.gz", "fastq/sample1_L2.fastq.gz",
+                 "fastq/sample1_L3.fastq.gz", "fastq/sample2_L2.fastq.gz",
+                 "fastq/sample3_L1.fastq.gz", "fastq/sample3_L3.fastq.gz")
 
-# Create bigWig
-bamToVis(samples=samples, summaryStats=paste0(logs, "summary.rda"),
-       path_bam=path_bam, path_vis=vis)
-
-# Peak calling
-callPeak(samples, path_bam=path_bam,
-        path_pc=pc, path_logs=logs,
-        type="narrow")
+## Convert to list to use as input for process_epigenome()
+# Create one list element for each simple
+names <- sapply(strsplit(basename(fastq_files), "_"), function(x) x[1])
+fastq_input <- split(fastq_files, names)
+fastq_input
 ```
+
+-   `out_name`. Names to use for the output files. Should be the same length as the list/vector used as input in `fastq_files`. The input names for the pipeline should be the name of the samples without any suffix. A suffix specific for each analysis and type of file will be added in each step of the analysis.
+-   `seq_type`. The type of experiment you are processing. Available options are listed at the beginning of this section.
+-   `type`. Either `SE` for single-end reads or `PE` for paired-end reads.
+
+Additional arguments refer to specific parts of the processing and will be described in the appropriate sections.
+
+# Data processing steps
 
 ## Quality control with FASTQC
 
@@ -109,20 +111,14 @@ The first step for any NGS pipeline is checking quality of the reads. This can b
 
 We can use the function `fastqc()` to perform this analysis in one or several samples in a row.
 
-```{r fastqc, eval=FALSE, include=TRUE}
-fastqc(samples="thyroid_sample", out_dir="testData/fastqc/", path_fastq="testData/raw/")
-```
-
 ## Aligning data
 
 For the alignment of ATAC and ChIP-seq data, we are going to use [**bowtie2**](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as an aligner. The output will be a SAM file. The parameters with which we are running the program are as follows:
 
 -   `-t`: Print wall-clock time taken by search phases.
--   `-x <bt2-idx>`: Index filename prefix (minus trailing .X.bt2). In our case it is already pointed to `/biodata/`, where the index is stored.[^1].
+-   `-x <bt2-idx>`: Index filename prefix (minus trailing .X.bt2).
 -   `-U`/`-1`,`-2`: Indicates the location and names of the fastq files to align. `-U` stands for single-end reads and `-1` and `-2` for the pair 1 reads and pair 2 reads, respectively (paired-end reads).
 -   `-p`: Number of alignment threads to launch.
-
-[^1]: See [Bowtie2-build indexer](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#the-bowtie2-build-indexer) for more info on how the index is created.
 
 The function we need to use for performing the alignment for this kind of data is `alignmentBowtie2()`. The default index is set as hg19 (`/biodata/indices/species/Hsapiens/hg19`)
 
@@ -168,9 +164,9 @@ sortAndStats(samples="thyroid_sample", path_bam="testData/bam/", path_logs="test
 cat testData/logs/thyroid_sample.raw.stats
 ```
 
-As we can observe in the summary report, this file still contains not aligned sequences. Therefore, the next step is removing those reads that are not aligned or aligned in regions that are not interesting for us. The function to perform this filtering is `filterOutReads()`. You can provide the specific chromosomes you want to filter out by using the argument `remove=`. By default it removes non-chanonical chromosomes. It will also automatically remove the reads aligned to the ENDOCE Consensus Blacklist regions[^2].
+As we can observe in the summary report, this file still contains not aligned sequences. Therefore, the next step is removing those reads that are not aligned or aligned in regions that are not interesting for us. The function to perform this filtering is `filterOutReads()`. You can provide the specific chromosomes you want to filter out by using the argument `remove=`. By default it removes non-chanonical chromosomes. It will also automatically remove the reads aligned to the ENDOCE Consensus Blacklist regions[^1].
 
-[^2]: [wgEncodeDacMapabilityConsensusExcludable.bed.gz](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/)
+[^1]: [wgEncodeDacMapabilityConsensusExcludable.bed.gz](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/)
 
 ```{r filterOutReads, include=TRUE, eval=FALSE}
 filterOutReads(samples="thyroid_sample", path_bam="testData/bam/", path_logs="testData/logs/")
