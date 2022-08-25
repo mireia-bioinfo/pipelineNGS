@@ -54,7 +54,7 @@ alignmentBowtie2 <- function(file,
 
   ## Start alignment
   message(paste0("[", format(Sys.time(), "%X"), "] ", ">> Alignment with Bowtie 2: ", name))
-  cmd <- paste("bowtie2 -t",
+  cmd <- paste("bowtie2 -t --local",
                "-x", index,
                al_fastq, # Different parameter depending on SE or PE
                "-p", cores,

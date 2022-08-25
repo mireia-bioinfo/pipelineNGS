@@ -71,7 +71,7 @@ processCUTTAG <- function(fastq_files,
                                   path_bam=path_bam,
                                   path_logs=path_logs,
                                   cores=cores,
-                                  extra_bowtie2="--end-to-end --very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700")
+                                  extra_bowtie2="--very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700")
   )
 
   ## 3) Post-processing with Samtools ----------------------
