@@ -51,5 +51,5 @@ callPeak <- function(file,
   print(cp)
   system(cp)
 
-  system(paste0("rm -r", tmp))
+  system(paste0("rm -r ", tmp))
 }
