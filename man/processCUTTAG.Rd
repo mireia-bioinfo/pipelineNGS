@@ -16,7 +16,7 @@ processCUTTAG(
   index = "/biodata/indices/species/Hsapiens/ucsc.hg19",
   remove = c("chrM", "chrUn", "_random", "_hap", "_gl", "EBV"),
   blacklist = "~/data/consensusBlacklist.bed",
-  chr_sizes = "",
+  gen_sizes = "",
   seacr_type = "stingent",
   seacr_top = 0.01,
   cores = 8,
@@ -50,7 +50,7 @@ element for each sample).}
 
 \item{blacklist}{List of blaclisted regions to remove from BAM file.}
 
-\item{chr_sizes}{Chromosome sizes to use for bedgraph conversion.}
+\item{gen_sizes}{Chromosome sizes to use for bedgraph conversion.}
 
 \item{seacr_type}{Type of peaks to call with SEACR, either "stringent"
 (default) or "relaxed."}
@@ -67,5 +67,5 @@ fraction of peaks based on total signal within peaks. Default: 0.01.}
 \item{seacr}{Path or alias of the SEACR utilty.}
 }
 \description{
-Automated processing of CUT&TAG samples
+DEPRECATED! Use \code{\link[=process_epigenome]{process_epigenome()}} with \code{seq_type="CT"} instead.
 }

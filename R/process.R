@@ -61,7 +61,7 @@
 #'
 process_epigenome <- function(fastq_files,
                               out_name=NULL,
-                              seq_type=c("ATAC", "CHIP"),
+                              seq_type=c("ATAC", "CHIP", "CT"),
                               type="SE", # or PE
                               suffix_fastq=NULL,
                               cores=8,
@@ -80,7 +80,7 @@ process_epigenome <- function(fastq_files,
                               blacklist="/vault/refs/hg38-blacklist.v2.bed",
                               # 4) Peak calling params
                               type_peak=c("narrow", "broad"),
-                              shift=FALSE,
+                              shift=c(TRUE, FALSE),
                               # 5) ATAC-seq offset
                               chunk=1e7,
                               gen_sizes="/vault/refs/hg38.chromSizes.txt") {
@@ -95,6 +95,12 @@ process_epigenome <- function(fastq_files,
   dir.create(path_bam, F)
   dir.create(path_peaks, F)
   dir.create(path_logs, F)
+
+  ## 0) Update necessary parameters
+  param_options <- paramdata[paramdata$Parameter==seq_type,]
+  if (extra_bowtie2!="") param_options$Extra_bowtie2 <- extra_bowtie2
+  if(length(type_peak)==1) param_options$peak_type <- type_peak
+  if(length(shift)==1) param_options$shift <- shift
 
   ## 1) Quality control with fastqc -----------------------
   if (run_fastqc) fastqc(files = unlist(fastq_files),
@@ -111,7 +117,7 @@ process_epigenome <- function(fastq_files,
                                     path_bam=path_bam,
                                     path_logs=path_logs,
                                     cores=cores,
-                                    extra_bowtie2=extra_bowtie2)
+                                    extra_bowtie2=param_options$Extra_bowtie2)
                     )
     files <- unlist(files)
 
@@ -126,11 +132,11 @@ process_epigenome <- function(fastq_files,
                   cores=cores)
 
   ## 4) Offset correction for ATAC-seq ---------------------
-  if (seq_type=="ATAC" & type=="SE") {
+  if (param_options$Offset_correction & type=="SE") {
     files <- lapply(files,
                     offsetATACSE,
                     chunk=chunk)
-  } else if (seq_type=="ATAC" & type=="PE") {
+  } else if (param_options$Offset_correction & type=="PE") {
     files <- lapply(files,
                     offsetATAC,
                     gen_sizes=gen_sizes,
@@ -138,17 +144,11 @@ process_epigenome <- function(fastq_files,
   }
 
   ## 5) Peak calling with MACS2 ----------------------------
-
-  if(seq_type=="ATAC" & length(peak_type)>1) { peak_type <- "narrow" }
-  if(seq_type=="CHIP" & length(peak_type)>1) { peak_type <- "broad" }
-  if(seq_type=="ATAC" & length(peak_type)>1) { shift <- TRUE }
-  if(seq_type=="CHIP" & length(peak_type)>1) { shift <- FALSE }
-
   files <- lapply(files,
                   callPeak,
                   path_peaks=path_peaks,
                   path_logs=path_logs,
-                  type_peak=peak_type,
-                  shift=shift,
+                  type_peak=param_options$peak_type,
+                  shift=param_options$shift,
                   type=type)
 }

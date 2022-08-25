@@ -7,7 +7,7 @@
 process_epigenome(
   fastq_files,
   out_name = NULL,
-  seq_type = c("ATAC", "CHIP"),
+  seq_type = c("ATAC", "CHIP", "CT"),
   type = "SE",
   suffix_fastq = NULL,
   cores = 8,
@@ -21,7 +21,7 @@ process_epigenome(
   remove = c("chrM", "chrUn", "_random", "_hap", "_gl", "EBVls"),
   blacklist = "/vault/refs/hg38-blacklist.v2.bed",
   type_peak = c("narrow", "broad"),
-  shift = FALSE,
+  shift = c(TRUE, FALSE),
   chunk = 1e+07,
   gen_sizes = "/vault/refs/hg38.chromSizes.txt"
 )

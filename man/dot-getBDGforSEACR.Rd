@@ -7,7 +7,7 @@
 .getBDGforSEACR(
   bam_file,
   cores,
-  chr_sizes,
+  gen_sizes,
   bedtools_bamtobed,
   bedtools_genomecov
 )

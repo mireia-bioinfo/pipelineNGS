@@ -7,7 +7,7 @@
 peakCallingSEACR(
   bam_file,
   path_peaks,
-  chr_sizes,
+  gen_sizes,
   cores = 5,
   seacr_type = "stingent",
   seacr_top = 0.01,
@@ -19,7 +19,7 @@ peakCallingSEACR(
 \arguments{
 \item{path_peaks}{Path for the peak files.}
 
-\item{chr_sizes}{Chromosome sizes to use for bedgraph conversion.}
+\item{gen_sizes}{Chromosome sizes to use for bedgraph conversion.}
 
 \item{cores}{Number of threads to use for the analysis.}
 
