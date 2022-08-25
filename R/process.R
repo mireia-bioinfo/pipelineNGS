@@ -7,8 +7,6 @@
 #'  indicating the output filenames.
 #' @param seq_type Experiment type, either "ATAC" (default) or "CHIP".
 #' @param type Sequence type, one of "SE" (single end) or "PE" (paired end).
-#' @param suffix_fastq Character indcating the suffix for the fastq files, for
-#' example ".fq.gz" or ".fastq.gz".
 #' @param path_fastqc Character indicating the output directory for the FastQC reports.
 #' @param path_bam Character indicating the output directory for the bam files.
 #' @param path_peaks Character indicating the output directory for the peak files.
@@ -63,7 +61,6 @@ process_epigenome <- function(fastq_files,
                               out_name=NULL,
                               seq_type=c("ATAC", "CHIP", "CT"),
                               type="SE", # or PE
-                              suffix_fastq=NULL,
                               cores=8,
                               # Directories
                               path_fastqc="FastQC/",
@@ -88,6 +85,8 @@ process_epigenome <- function(fastq_files,
   if(type=="PE" & !is(fastq_files, "list")) stop("Character vectors not allowed as fastq_files for PE sequencing. Your input should be a a list of character vectors.")
   if(type=="PE" & unique(sapply(fastq_files, length))!=2) stop("Your list contains more than two files per element. In PE mode you should have a list, where each element contains R1 and R2.")
 
+  if(is.null(out_name)) stop("You should provide sample names using the argument `out_name`")
+  if(length(fastq_files)!=length(out_name)) stop("The length of your vector / list of fastq files should be the same as your out_name")
   # if (type=="PE" & !is(fastq_files, "list")) fastq_files <- list(fastq_files)
 
   ## 0) Create directory tree -----------------------------
@@ -111,8 +110,7 @@ process_epigenome <- function(fastq_files,
     files <- mapply(alignmentBowtie2,
                     file=fastq_files,
                     out_name=out_name,
-                    MoreArgs = list(suffix_fastq=suffix_fastq,
-                                    type=type,
+                    MoreArgs = list(type=type,
                                     index=index,
                                     path_bam=path_bam,
                                     path_logs=path_logs,

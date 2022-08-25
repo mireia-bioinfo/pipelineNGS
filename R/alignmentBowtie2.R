@@ -23,7 +23,6 @@
 alignmentBowtie2 <- function(file,
                              out_name=NULL,
                              type="SE",
-                             suffix_fastq=NULL,
                              cores=6,
                              index="/vault/refs/indexes/hg38",
                              path_bam="bam/",
@@ -36,12 +35,7 @@ alignmentBowtie2 <- function(file,
 
   if (!all(file.exists(unlist(file)))) stop(paste("Input file", file, "does not exist"))
 
-  ## Get names for aligned files
-  if (is.null(out_name)) {
-    name <- getNameFromPath(file[1], suffix=suffix_fastq)
-  } else {
-    name <- out_name
-  }
+  name <- out_name
 
   ## Check single-end or paired-end input
   if (type=="SE") { ## Align single end file

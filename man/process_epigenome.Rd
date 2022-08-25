@@ -9,7 +9,6 @@ process_epigenome(
   out_name = NULL,
   seq_type = c("ATAC", "CHIP", "CT"),
   type = "SE",
-  suffix_fastq = NULL,
   cores = 8,
   path_fastqc = "FastQC/",
   path_bam = "BAM/",
@@ -36,9 +35,6 @@ indicating the output filenames.}
 \item{seq_type}{Experiment type, either "ATAC" (default) or "CHIP".}
 
 \item{type}{Sequence type, one of "SE" (single end) or "PE" (paired end).}
-
-\item{suffix_fastq}{Character indcating the suffix for the fastq files, for
-example ".fq.gz" or ".fastq.gz".}
 
 \item{cores}{Number of threads to use for the analysis.}
 

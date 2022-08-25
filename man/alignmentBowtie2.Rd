@@ -8,7 +8,6 @@ alignmentBowtie2(
   file,
   out_name = NULL,
   type = "SE",
-  suffix_fastq = NULL,
   cores = 6,
   index = "/vault/refs/indexes/hg38",
   path_bam = "bam/",
@@ -25,9 +24,6 @@ length 2 (paired-end) with the file names of the samples to be analysed.}
 indicating the output filenames.}
 
 \item{type}{Sequence type, one of "SE" (single end) or "PE" (paired end).}
-
-\item{suffix_fastq}{Character indcating the suffix for the fastq files, for
-example ".fq.gz" or ".fastq.gz".}
 
 \item{cores}{Number of threads to use for the analysis.}
 
