@@ -4,7 +4,14 @@
 \alias{callPeak}
 \title{Peak calling with MACS2}
 \usage{
-callPeak(file, path_peaks, path_logs, type = "narrow", shift = FALSE)
+callPeak(
+  file,
+  path_peaks,
+  path_logs,
+  type_peak = "narrow",
+  shift = FALSE,
+  type = "SE"
+)
 }
 \arguments{
 \item{file}{Character string with the filename for the BAM file.}
@@ -13,10 +20,13 @@ callPeak(file, path_peaks, path_logs, type = "narrow", shift = FALSE)
 
 \item{path_logs}{Character indicating the output directory for the logs.}
 
-\item{type}{Sequence type, one of "SE" (single end) or "PE" (paired end).}
+\item{type_peak}{Character indicating the type of peak to be called with
+MACS2, either "narrow" or "broad".}
 
 \item{shift}{Logical indicating whether the reads should be shifted -100bp
 and extended to 200bp (TRUE) or not (FALSE, default).}
+
+\item{type}{Sequence type, one of "SE" (single end) or "PE" (paired end).}
 }
 \value{
 Bed files in \code{path_peaks} with the location of the enriched regions.

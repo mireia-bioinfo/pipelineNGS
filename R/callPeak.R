@@ -13,17 +13,23 @@
 callPeak <- function(file,
                      path_peaks,
                      path_logs,
-                     type="narrow",
-                     shift=FALSE) {
+                     type_peak="narrow",
+                     shift=FALSE,
+                     type = "SE" # or PE
+                     ) {
 
   message(paste0("[", format(Sys.time(), "%X"), "] ", ">> Starting Peak Calling with MACS2"))
 
   dir.create(path_peaks, F)
 
   ## Create parameters
-  if (type=="narrow") type_spec <- "-q 0.05 --nomodel"
-  else if (type=="broad") type_spec <- "--broad --broad-cutoff 0.1 --nomodel"
+  if (type_peak=="narrow") type_spec <- "-q 0.05 --nomodel"
+  else if (type_peak=="broad") type_spec <- "--broad --broad-cutoff 0.1 --nomodel"
+
   if (shift==TRUE) type_spec <- paste(type_spec, "--shift -100 --extsize 200")
+
+  if (type == "SE") format_spec <- "BAM"
+  else if (type == "PE") format_spec <- "BAMPE"
 
   ## Temporary folder
   tmp <- paste0(path_peaks, "tmp/"); dir.create(tmp, F)
@@ -35,7 +41,8 @@ callPeak <- function(file,
   ## Run peak calling
   message(paste0("[", format(Sys.time(), "%X"), "] ", "---- ", file))
   cp <- paste("macs2 callpeak",
-              "-f BAM -t", file,
+              "-f", format_spec,
+              "-t", file,
               "-g hs --outdir", path_peaks, "-n", name,
               "--tempdir", tmp,
               type_spec,
@@ -44,5 +51,5 @@ callPeak <- function(file,
   print(cp)
   system(cp)
 
-  # system(paste0("rm -r", tmp))
+  system(paste0("rm -r", tmp))
 }

@@ -22,7 +22,7 @@
 #' name containing matches for these characters will be removed.
 #' @param blacklist Character indicating the file containing blacklist regions in
 #' bed format. Any reads overlapping these regions will be discarded.
-#' @param peak_type Character indicating the type of peak to be called with
+#' @param type_peak Character indicating the type of peak to be called with
 #' MACS2, either "narrow" or "broad".
 #' @param shift Logical indicating whether the reads should be shifted -100bp
 #' and extended to 200bp (TRUE) or not (FALSE, default).
@@ -79,7 +79,7 @@ process_epigenome <- function(fastq_files,
                               remove=c("chrM", "chrUn", "_random", "_hap", "_gl", "EBVls"),
                               blacklist="/vault/refs/hg38-blacklist.v2.bed",
                               # 4) Peak calling params
-                              peak_type=c("narrow", "broad"),
+                              type_peak=c("narrow", "broad"),
                               shift=FALSE,
                               # 5) ATAC-seq offset
                               chunk=1e7,
@@ -148,6 +148,7 @@ process_epigenome <- function(fastq_files,
                   callPeak,
                   path_peaks=path_peaks,
                   path_logs=path_logs,
-                  type=peak_type,
-                  shift=shift)
+                  type_peak=peak_type,
+                  shift=shift,
+                  type=type)
 }

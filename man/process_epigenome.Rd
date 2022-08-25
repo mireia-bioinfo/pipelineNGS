@@ -20,7 +20,7 @@ process_epigenome(
   extra_bowtie2 = "",
   remove = c("chrM", "chrUn", "_random", "_hap", "_gl", "EBVls"),
   blacklist = "/vault/refs/hg38-blacklist.v2.bed",
-  peak_type = c("narrow", "broad"),
+  type_peak = c("narrow", "broad"),
   shift = FALSE,
   chunk = 1e+07,
   gen_sizes = "/vault/refs/hg38.chromSizes.txt"
@@ -64,7 +64,7 @@ name containing matches for these characters will be removed.}
 \item{blacklist}{Character indicating the file containing blacklist regions in
 bed format. Any reads overlapping these regions will be discarded.}
 
-\item{peak_type}{Character indicating the type of peak to be called with
+\item{type_peak}{Character indicating the type of peak to be called with
 MACS2, either "narrow" or "broad".}
 
 \item{shift}{Logical indicating whether the reads should be shifted -100bp
