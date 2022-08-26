@@ -83,7 +83,7 @@ process_epigenome <- function(fastq_files,
                               gen_sizes="/vault/refs/hg38.chromSizes.txt") {
 
   if(type=="PE" & !is(fastq_files, "list")) stop("Character vectors not allowed as fastq_files for PE sequencing. Your input should be a a list of character vectors.")
-  if(type=="PE" & unique(sapply(fastq_files, length))!=2) stop("Your list contains more than two files per element. In PE mode you should have a list, where each element contains R1 and R2.")
+  if(type=="PE" & any(unique(sapply(fastq_files, length))!=2)) stop("Your list contains more than two files per element. In PE mode you should have a list, where each element contains R1 and R2.")
 
   if(is.null(out_name)) stop("You should provide sample names using the argument `out_name`")
   if(length(fastq_files)!=length(out_name)) stop("The length of your vector / list of fastq files should be the same as your out_name")
