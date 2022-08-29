@@ -113,13 +113,10 @@ getStats <- function(path_logs="Logs/",
 
 .parseBowtie2LogPE<- function(logfile) {
   log <- readLines(con = logfile)
-  total <- .obtainReadNumber(log[grep("were paired", log)])*2
-  unaligned <- .obtainReadNumber(log[grep(") aligned 0 times", log)])
-  unique <- .obtainReadNumber(log[grep("aligned concordantly exactly 1 time", log)])*2 +
-    .obtainReadNumber(log[grep("aligned discordantly 1 time", log)])*2 +
-    .obtainReadNumber(log[grep(") aligned exactly 1 time", log)])
-  multi <- .obtainReadNumber(log[grep(" aligned concordantly >1 times", log)])*2 +
-    .obtainReadNumber(log[grep(") aligned >1 times", log)])
+  total <- .obtainReadNumber(log[grep("were paired", log)])
+  unaligned <- .obtainReadNumber(log[grep(") aligned concordantly 0 times", log)])
+  unique <- .obtainReadNumber(log[grep("aligned concordantly exactly 1 time", log)])
+  multi <- .obtainReadNumber(log[grep(" aligned concordantly >1 times", log)])
 
   stats <- data.frame(total, unaligned, unique, multi)
   return(stats)
