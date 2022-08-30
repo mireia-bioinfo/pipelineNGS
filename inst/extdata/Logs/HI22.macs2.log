@@ -1,0 +1,81 @@
+INFO  @ Fri, 26 Aug 2022 12:00:02: 
+# Command line: callpeak -f BAM -t BAM/HI22.bam -g hs --outdir Peaks/ -n HI22 --tempdir Peaks/tmp/ --broad --broad-cutoff 0.1 --nomodel
+# ARGUMENTS LIST:
+# name = HI22
+# format = BAM
+# ChIP-seq file = ['BAM/HI22.bam']
+# control file = None
+# effective genome size = 2.70e+09
+# band width = 300
+# model fold = [5, 50]
+# qvalue cutoff for narrow/strong regions = 5.00e-02
+# qvalue cutoff for broad/weak regions = 1.00e-01
+# The maximum gap between significant sites is assigned as the read length/tag size.
+# The minimum length of peaks is assigned as the predicted fragment length "d".
+# Larger dataset will be scaled towards smaller dataset.
+# Range for calculating regional lambda is: 10000 bps
+# Broad region calling is on
+# Paired-End mode is off
+ 
+INFO  @ Fri, 26 Aug 2022 12:00:02: #1 read tag files... 
+INFO  @ Fri, 26 Aug 2022 12:00:02: #1 read treatment tags... 
+INFO  @ Fri, 26 Aug 2022 12:00:04:  1000000 
+INFO  @ Fri, 26 Aug 2022 12:00:05:  2000000 
+INFO  @ Fri, 26 Aug 2022 12:00:06:  3000000 
+INFO  @ Fri, 26 Aug 2022 12:00:07:  4000000 
+INFO  @ Fri, 26 Aug 2022 12:00:08:  5000000 
+INFO  @ Fri, 26 Aug 2022 12:00:09:  6000000 
+INFO  @ Fri, 26 Aug 2022 12:00:10:  7000000 
+INFO  @ Fri, 26 Aug 2022 12:00:12:  8000000 
+INFO  @ Fri, 26 Aug 2022 12:00:13:  9000000 
+INFO  @ Fri, 26 Aug 2022 12:00:14:  10000000 
+INFO  @ Fri, 26 Aug 2022 12:00:15:  11000000 
+INFO  @ Fri, 26 Aug 2022 12:00:16:  12000000 
+INFO  @ Fri, 26 Aug 2022 12:00:17:  13000000 
+INFO  @ Fri, 26 Aug 2022 12:00:19:  14000000 
+INFO  @ Fri, 26 Aug 2022 12:00:20:  15000000 
+INFO  @ Fri, 26 Aug 2022 12:00:21:  16000000 
+INFO  @ Fri, 26 Aug 2022 12:00:22:  17000000 
+INFO  @ Fri, 26 Aug 2022 12:00:23:  18000000 
+INFO  @ Fri, 26 Aug 2022 12:00:24:  19000000 
+INFO  @ Fri, 26 Aug 2022 12:00:26:  20000000 
+INFO  @ Fri, 26 Aug 2022 12:00:27:  21000000 
+INFO  @ Fri, 26 Aug 2022 12:00:28:  22000000 
+INFO  @ Fri, 26 Aug 2022 12:00:29:  23000000 
+INFO  @ Fri, 26 Aug 2022 12:00:30:  24000000 
+INFO  @ Fri, 26 Aug 2022 12:00:31:  25000000 
+INFO  @ Fri, 26 Aug 2022 12:00:33:  26000000 
+INFO  @ Fri, 26 Aug 2022 12:00:34:  27000000 
+INFO  @ Fri, 26 Aug 2022 12:00:35:  28000000 
+INFO  @ Fri, 26 Aug 2022 12:00:36:  29000000 
+INFO  @ Fri, 26 Aug 2022 12:00:37:  30000000 
+INFO  @ Fri, 26 Aug 2022 12:00:38:  31000000 
+INFO  @ Fri, 26 Aug 2022 12:00:40:  32000000 
+INFO  @ Fri, 26 Aug 2022 12:00:41:  33000000 
+INFO  @ Fri, 26 Aug 2022 12:00:42:  34000000 
+INFO  @ Fri, 26 Aug 2022 12:00:43:  35000000 
+INFO  @ Fri, 26 Aug 2022 12:00:44:  36000000 
+INFO  @ Fri, 26 Aug 2022 12:00:45:  37000000 
+INFO  @ Fri, 26 Aug 2022 12:00:46:  38000000 
+INFO  @ Fri, 26 Aug 2022 12:00:48:  39000000 
+INFO  @ Fri, 26 Aug 2022 12:00:49:  40000000 
+INFO  @ Fri, 26 Aug 2022 12:00:49: 40124425 reads have been read. 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #1 tag size is determined as 50 bps 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #1 tag size = 50.0 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #1  total tags in treatment: 40124425 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #1 user defined the maximum tags... 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #1 filter out redundant tags at the same location and the same strand by allowing at most 1 tag(s) 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #1  tags after filtering in treatment: 40105386 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #1  Redundant rate of treatment: 0.00 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #1 finished! 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #2 Build Peak Model... 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #2 Skipped... 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #2 Use 200 as fragment length 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #3 Call peaks... 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #3 Call broad peaks with given level1 -log10qvalue cutoff and level2: 1.301030, 1.000000... 
+INFO  @ Fri, 26 Aug 2022 12:00:49: #3 Pre-compute pvalue-qvalue table... 
+INFO  @ Fri, 26 Aug 2022 12:02:41: #3 Call peaks for each chromosome... 
+INFO  @ Fri, 26 Aug 2022 12:03:52: #4 Write output xls file... Peaks/HI22_peaks.xls 
+INFO  @ Fri, 26 Aug 2022 12:03:52: #4 Write broad peak in broadPeak format file... Peaks/HI22_peaks.broadPeak 
+INFO  @ Fri, 26 Aug 2022 12:03:52: #4 Write broad peak in bed12/gappedPeak format file... Peaks/HI22_peaks.gappedPeak 
+INFO  @ Fri, 26 Aug 2022 12:03:53: Done! 

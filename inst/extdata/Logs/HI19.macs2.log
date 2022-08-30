@@ -1,0 +1,54 @@
+INFO  @ Fri, 26 Aug 2022 12:03:53: 
+# Command line: callpeak -f BAM -t BAM/HI19.bam -g hs --outdir Peaks/ -n HI19 --tempdir Peaks/tmp/ --broad --broad-cutoff 0.1 --nomodel
+# ARGUMENTS LIST:
+# name = HI19
+# format = BAM
+# ChIP-seq file = ['BAM/HI19.bam']
+# control file = None
+# effective genome size = 2.70e+09
+# band width = 300
+# model fold = [5, 50]
+# qvalue cutoff for narrow/strong regions = 5.00e-02
+# qvalue cutoff for broad/weak regions = 1.00e-01
+# The maximum gap between significant sites is assigned as the read length/tag size.
+# The minimum length of peaks is assigned as the predicted fragment length "d".
+# Larger dataset will be scaled towards smaller dataset.
+# Range for calculating regional lambda is: 10000 bps
+# Broad region calling is on
+# Paired-End mode is off
+ 
+INFO  @ Fri, 26 Aug 2022 12:03:53: #1 read tag files... 
+INFO  @ Fri, 26 Aug 2022 12:03:53: #1 read treatment tags... 
+INFO  @ Fri, 26 Aug 2022 12:03:54:  1000000 
+INFO  @ Fri, 26 Aug 2022 12:03:56:  2000000 
+INFO  @ Fri, 26 Aug 2022 12:03:57:  3000000 
+INFO  @ Fri, 26 Aug 2022 12:03:58:  4000000 
+INFO  @ Fri, 26 Aug 2022 12:04:00:  5000000 
+INFO  @ Fri, 26 Aug 2022 12:04:01:  6000000 
+INFO  @ Fri, 26 Aug 2022 12:04:02:  7000000 
+INFO  @ Fri, 26 Aug 2022 12:04:03:  8000000 
+INFO  @ Fri, 26 Aug 2022 12:04:05:  9000000 
+INFO  @ Fri, 26 Aug 2022 12:04:06:  10000000 
+INFO  @ Fri, 26 Aug 2022 12:04:07:  11000000 
+INFO  @ Fri, 26 Aug 2022 12:04:09:  12000000 
+INFO  @ Fri, 26 Aug 2022 12:04:10:  13000000 
+INFO  @ Fri, 26 Aug 2022 12:04:10: 13237769 reads have been read. 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #1 tag size is determined as 50 bps 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #1 tag size = 50.0 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #1  total tags in treatment: 13237769 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #1 user defined the maximum tags... 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #1 filter out redundant tags at the same location and the same strand by allowing at most 1 tag(s) 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #1  tags after filtering in treatment: 13234119 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #1  Redundant rate of treatment: 0.00 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #1 finished! 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #2 Build Peak Model... 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #2 Skipped... 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #2 Use 200 as fragment length 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #3 Call peaks... 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #3 Call broad peaks with given level1 -log10qvalue cutoff and level2: 1.301030, 1.000000... 
+INFO  @ Fri, 26 Aug 2022 12:04:10: #3 Pre-compute pvalue-qvalue table... 
+INFO  @ Fri, 26 Aug 2022 12:04:46: #3 Call peaks for each chromosome... 
+INFO  @ Fri, 26 Aug 2022 12:05:07: #4 Write output xls file... Peaks/HI19_peaks.xls 
+INFO  @ Fri, 26 Aug 2022 12:05:08: #4 Write broad peak in broadPeak format file... Peaks/HI19_peaks.broadPeak 
+INFO  @ Fri, 26 Aug 2022 12:05:08: #4 Write broad peak in bed12/gappedPeak format file... Peaks/HI19_peaks.gappedPeak 
+INFO  @ Fri, 26 Aug 2022 12:05:08: Done! 

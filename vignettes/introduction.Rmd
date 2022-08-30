@@ -14,10 +14,16 @@ vignette: >
 
 # Introduction
 
-```{r Setup, message=FALSE, warning=FALSE, echo=FALSE}
-devtools::load_all()
-knitr::opts_chunk$set(cache=TRUE)
-.dat <- "test/"
+Package installation:
+
+```{r, eval=FALSE}
+BiocManager::install("mireia-bioinfo/pipelineNGS")
+```
+
+Load the package:
+
+```{r Setup}
+library(pipelineNGS)
 ```
 
 # Requirements
@@ -58,11 +64,18 @@ In this package we currently have implemented the pipelines for analyzing the fo
 -   ATAC-seq (`ATAC`).
 -   ChIP-seq for histone marks (`CHIP`).
 -   CUT&TAG for histone marks (`CT`).
+-   CUT&RUN for transcription factors (`CR`).
 
 In the following figure you can see a description of the steps needed for the analysis of each type of experiment, with specific arguments (if any) used in the different steps.
 
 ```{r, echo=FALSE}
 knitr::include_graphics("figures/process_epi_map.png")
+```
+
+The specific parameters used for each experiment are described in `paramdata`:
+
+```{r}
+knitr::kable(paramdata)
 ```
 
 All these steps are implemented in a single function called `process_epigenome()`. Critical parameters for this function are the following:
@@ -105,151 +118,141 @@ Additional arguments refer to specific parts of the processing and will be descr
 
 # Data processing steps
 
-## Quality control with FASTQC
+All needed data processing steps are wrapped inside the function `process_epigenome`. We will now go through every key step to explain the important parameters.
+
+The following chunk shows a minor example of how to run an analyses, in this case of paired-end (`type=PE`) CUT&TAG data (`seq_type="CT"`):
+
+```{r, eval=FALSE}
+index <- "/vault/refs/indexes/hg38"
+blacklist <- "/vault/refs/Blacklist/lists/hg38-blacklist.v2.bed"
+
+# Using the files described in the previous chunk:
+process_epigenome(fastq_files=fastq_input,
+                  out_name=names(fastq_input),
+                  run_fastqc=TRUE,
+                  seq_type="CT",
+                  type="PE",
+                  index=index,
+                  blacklist=blacklist,
+                  cores=6)
+```
+
+## Quality control
 
 The first step for any NGS pipeline is checking quality of the reads. This can be done using a program called [**FastQC**](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), which takes as input FASTQ files and returns an html with several quality control analysis and if your sequences passed/failed each test.
 
-We can use the function `fastqc()` to perform this analysis in one or several samples in a row.
+This part is implemented inside `process_epigenome()` and will run when argument `run_fastqc=TRUE`. You can use the function `fastqc()` to perform only this analysis.
 
-## Aligning data
+Results from this step are stored in a folder named `FastQC/`.
 
-For the alignment of ATAC and ChIP-seq data, we are going to use [**bowtie2**](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as an aligner. The output will be a SAM file. The parameters with which we are running the program are as follows:
+## Alignment
 
+For the alignment of epigenetic data we use [**bowtie2**](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as an aligner. The output will be redirected into a pipe to create a position-sorted and indexed BAM file (`samplename.raw.bam`). The parameters used to run bowtie2 are:
+
+-   `--local`: Perform local alignment (will clip sequences that do not match the reference). This allows us to align without removing the adapters, as they will be clipped from the sequence.
 -   `-t`: Print wall-clock time taken by search phases.
--   `-x <bt2-idx>`: Index filename prefix (minus trailing .X.bt2).
+-   `-x <bt2-idx>`: Index file name prefix (minus trailing .X.bt2).
 -   `-U`/`-1`,`-2`: Indicates the location and names of the fastq files to align. `-U` stands for single-end reads and `-1` and `-2` for the pair 1 reads and pair 2 reads, respectively (paired-end reads).
 -   `-p`: Number of alignment threads to launch.
+-   Additional parameters are added in the case of CUT&TAG samples, following the analysis described in: <https://yezhengstat.github.io/CUTTag_tutorial/#311_Alignment_to_HG38>
 
-The function we need to use for performing the alignment for this kind of data is `alignmentBowtie2()`. The default index is set as hg19 (`/biodata/indices/species/Hsapiens/hg19`)
+You can check the statistics of the alignment in the `Logs/` folder and the result for the alignment can be found in `BAM/*.raw.bam`.
 
-```{r alignmentBowtie2, eval=FALSE, include=TRUE}
-alignmentBowtie2(samples="thyroid_sample", type="SE", 
-                 path_fastq="testData/raw/", suffix_fastq=".fq.gz", path_bam="testData/bam/", 
-                 cores=6, path_logs="testData/logs/")
-```
+## Post-processing
 
-You can check the statistics of the alignment in the `logs/` folder and the result for the aligment can be found in `bam/tmp/`.
+After the alignment, we need to do several post-processing steps in order to have homogeneous and filtered data for downstream analyses.
 
-```{bash cat alignmentBowtie2}
-cat testData/logs/thyroid_sample.alignment.log
-```
+-   **Remove reads aligning to black-listed regions**.
+-   **Remove unaligned reads**.
+-   **Select reads aligning to cannonical chromosomes**.
+-   **Remove duplicates** using `samtools markdup`.
 
-<!-- ### RNA-seq -->
+You can check the statistics in the `Logs/` folder and the resulting file can be found in `BAM/*.bam`.
 
-<!-- When aligning RNA-seq data, we need to use a different alignment. In our case, we chose to use [TopHat2](https://ccb.jhu.edu/software/tophat/index.shtml) -->
+## Offset correction (only ATAC-seq)
 
-<!-- - `-r`: Mate inner distance (set at 100, default tophat 50). -->
+If we are dealing with **ATAC-seq** data, we need to perform an **offset correction** to correct the reads for the transposase binding event. This is implemented in the function `offsetATAC()`, which uses [**bedtools**](http://bedtools.readthedocs.io/en/latest/) and `awk` and is used with paired-end data and `offsetATACSE()` which uses `ATACseqQC::shiftGAlignments()` to perform this same correction (I don't remember why I use different fuctions, I think the ATACseqQC function did not work with paired-end reads?).
 
-<!-- - `-o`: Output directory for the results. -->
+> **Warning**: If you are trying to do some kind of allelle-specific analysis or any other analysis in which it is important the actual sequence of the read and its location, you might have to use BAM files without the offset correction.
 
-<!-- - `-p`: Number of alignment threads to launch. -->
+The resulting file can be found in `BAM/*.offset.bam`.
 
-<!-- - `--no-coverage-search`: -->
+## Peak calling
 
-<!-- - `--transcriptome-index`:  -->
+In order to proceed with the analysis it is key to have the coordinates for the complete set of enriched regions in our experiment. The process of searching and reporting such regions is called **peak calling**.
 
-## Data post-processing
+To run these analysis we are going to use [**MACS2**](https://github.com/taoliu/MACS) `callPeak` function, which is implemented in `callPeak()`. The parameters used in this step are determined by the argument `seq_type` but can be overwritten by passing them to process_epigenome() using the arguments:
 
-After the aligment, we need to do several post-processing steps in order to have homogeneous and filtered data for the downstream analysis. This post-processing is very similar between ATAC-seq and ChIP-seq, but ATAC-seq needs an extra step for filtering the reads.
+-   `type_peak` indicates whether to call `broad` or `narrow` peaks.
+-   `shift` indicates whether to shift the called peaks using the parameters `--shift -100 --extsize 200` in the MACS2 call.
 
-First of all, since the output from **bowtie2** is a `SAM` file, we need to **convert** it into its **binary-compressed form: `BAM`**. Therefore, the first function to use is `samToBam()`, which will convert the SAM file to BAM (`samtools view`). Then, we'll also need to run `sortAndStats()` to sort it by coordinates (`samtools sort`), create an index (`samtools index`) and a summary (`samtools flagstat`).
+This function will return several files in the folder `Peaks/` corresponding to our enriched regions.
 
-```{r samToBam, include=TRUE, eval=FALSE}
-samToBam(samples="thyroid_sample", path_bam="testData/bam/", path_logs="testData/logs/")
-sortAndStats(samples="thyroid_sample", path_bam="testData/bam/", path_logs="testData/logs/",
-             input_suf=".uns.raw.bam", output_suf=".raw.bam")
-```
+# Generate stats
 
-```{bash cat samToBam}
-cat testData/logs/thyroid_sample.raw.stats
-```
+It is possible to summarize the stats from the processing using a couple functions implemented in the package:
 
-As we can observe in the summary report, this file still contains not aligned sequences. Therefore, the next step is removing those reads that are not aligned or aligned in regions that are not interesting for us. The function to perform this filtering is `filterOutReads()`. You can provide the specific chromosomes you want to filter out by using the argument `remove=`. By default it removes non-chanonical chromosomes. It will also automatically remove the reads aligned to the ENDOCE Consensus Blacklist regions[^1].
+```{r}
+stats <- 
+  getStats(
+    path_logs = system.file("extdata/Logs/", package="pipelineNGS"),
+    path_peaks = system.file("extdata/Peaks/", package="pipelineNGS"),
+    peak_suffix = "broadPeak"
+)
 
-[^1]: [wgEncodeDacMapabilityConsensusExcludable.bed.gz](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/)
+knitr::kable(stats)
 
-```{r filterOutReads, include=TRUE, eval=FALSE}
-filterOutReads(samples="thyroid_sample", path_bam="testData/bam/", path_logs="testData/logs/")
-```
+library(ggplot2)
+library(scales)
+theme_set(theme_linedraw(base_size=11))
 
-```{bash cat filterOutReads}
-cat testData/logs/thyroid_sample.filtered.stats
-```
+## Plot alignment rates
+al <- 
+  pipelineNGS::plotAlignment(stats) +
+  scale_fill_manual(values=c("brown3", "steelblue3", "seagreen3")) + 
+  ylab("Alignment rate (%)") 
 
-Once we have removed the reads that are not informative for us, we also need to **remove** those reads that could be **PCR duplicates**. To do so, we use [**Picard Tools**](https://broadinstitute.github.io/picard/) implemented in the function `removeDuplicates()`.
+## Plot chrM rate
+chrm <- 
+  ggplot(stats,
+       aes(sampleID, chrM_rate)) +
+  geom_bar(stat="identity", color="black") + 
+  coord_flip() +
+  ylab("chrM Rate (%)")
 
-```{r removeDuplicates, include=TRUE, eval=FALSE}
-removeDuplicates(samples="thyroid_sample", path_bam="testData/bam/", path_logs="testData/logs/")
-```
+## Plot duplication rate
+dup <- 
+  ggplot(stats,
+       aes(sampleID, duplicate_rate)) +
+  geom_bar(stat="identity", color="black") + 
+  coord_flip() +
+  ylab("Duplication Rate (%)")
 
-```{bash cat removeDuplicates}
-tail -n 4 testData/logs/thyroid_sample.rmdup.stats
-```
+## Plot called peaks
+peaks <- 
+  ggplot(stats,
+       aes(sampleID, num_peaks)) +
+  geom_bar(aes(fill=num_peaks), stat="identity", color="black") +
+  geom_label(aes(y=0, label=comma(num_peaks, accuracy=1)), hjust=0, nudge_y = 0, size=3,
+             alpha=.7) +
+  coord_flip() +
+  scale_y_continuous(labels=comma) +
+  theme(legend.position="none") +
+  ylab("# of Peaks")
 
-If we are dealing with **ATAC-seq** data, we need to perform an **offset correction**. This is implemented in the function `offsetATAC()`, which uses [**bedtools**](http://bedtools.readthedocs.io/en/latest/) and `awk` to correct the reads for the transposase binding event.
-
-> **Warning**: If you are trying to do some kind of allelle specific analysis or any other analysis in which it is important the actual sequence of the read and its location, you might have to use BAM files without the offset correction.
-
-```{r Offset Correction, include=TRUE, eval=FALSE}
-offsetATAC(samples="thyroid_sample", path_bam="testData/bam/",path_logs="testData/logs/")
-```
-
-Since the `offsetATAC()` function already sorts and indexes the file, we do not need to run any further functions.
-
-However, if you are analyzing **ChIP-seq data** or you don't want to perform an offset correction for your ATAC-seq data, you'll need to run the function `sortAndStats()` with default parameters, in order to create the final file and add the statistics to the log folder.
-
-Once the post-processing is completed, you need to check if the final files are correct and then you can proceed to remove the temporary folder where all intermidiate files are stored using `rmTmp()`.
-
-> Do not remove the tmp folder before checking that the files are correct, because if they are not, you'll need to run the whole pipeline again.
-
-```{r Remove tmp, include=TRUE, eval=FALSE}
-rmTmp(path_bam="testData/bam/")
-```
-
-Before proceding with the analysis of the sequences, we can generate a summary table with the number of reads that were filtered at each step using `summarizeLogs()`. The different values that are stored in this table are:
-
--   `al.raw`: Total number of reads obtained from the sequencing facility.
--   `al.aligned`: Total number of aligned reads. $$al.aligned=al.raw−al.unaligned$$
--   `pp.clean`: Number of aligned reads after removing those aligned to chrM and non-cannonical chromosomes. $$pp.clean=al.aligned−pp.filtOut$$
--   `pp.final`: Final number of reads, after removing duplicated reads. $$pp.final=pp.clean−pp.duplicates$$
--   `perc.align`: Percentage of aligned reads from total raw reads obtained. $$perc.align=al.alignedal.raw∗100$$
--   `perc.filtOut`: Percentage of the aligned reads that are removed because they map to non-cannonical chromosomes. $$perc.filtOut=pp.filtOutal.aligned∗100$$
--   `perc.duplicates`: Percentage of the aligned reads that are marked as duplicates, and therefore removed. $$perc.duplicates=pp.duplicates - al.aligned∗100$$
--   `perc.effiRaw`: Percentage of the raw reads that are kept from dowsntream analysis (after removing duplicates). $$perc.effiRaw=pp.finalal.raw∗100$$
--   `perc.effiAligned`: Percentage from the raw reads that are kept from dowsntream analysis (after removing duplicates). $$perc.effiAligned=pp.finalal.aligned∗100$$
--   `scale`: Factor to use for scaling track to RPKM (10K reads). It is used by function `bamToVis()`. $$scale=\frac{1e^7}{pp.clean}$$
-
-```{r Summary Stats}
-summarizeLogs(out_name="summary", path_logs="testData/logs/")
-load("testData/logs/summary.rda")
-knitr::kable(sum.df)
+## Composite plot
+cowplot::plot_grid(al + theme(legend.position="none"), 
+                   chrm, 
+                   dup,
+                   peaks, 
+                   ncol=2,
+                   labels="AUTO")
 ```
 
 # Conversion to bigWig and Visualization
 
 Once we have our post-processed data, we can proceed to visualize the coverage of our samples in a genome browser. We can choose between uploading the tracks to public servers and load them into [**UCSC Genome Browser**](https://genome.ucsc.edu/cgi-bin/hgTracks) or to use a local browser like [**IGV**](http://software.broadinstitute.org/software/igv/).
 
-IGV allows to load BAM files and see the coverage and alignment of the reads, but if we want to look just at the distribution of reads, we need to create either BedGraph of BigWig files. In oder to be inclusive, we generated a function to create both BedGraph-compressed (.tar.gz) and BigWig files.
+IGV allows to load BAM files and see the coverage and alignment of the reads, but if we want to look just at the distribution of reads, we need to create either BedGraph of BigWig files.
 
-```{r Visualization, eval=FALSE, message=TRUE, warning=FALSE, include=TRUE}
-bamToVis(samples="thyroid_sample", summaryStats="testData/logs/summary.rda",
-         path_bam="testData/bam/", path_vis="testData/vis/")
-```
-
-Now we can load these files to IGV or UCSC to see the profiles.
-
-## Peak calling
-
-In order to proceed with the analysis it is also interesting to have the coordinates for the complete set of enriched regions in our experiment. The process of searching and reporting such regions is the **peak calling**.
-
-To run these analysis we are going to use [**MACS2**](https://github.com/taoliu/MACS) callPeak function, which is implemented in `callPeak()`. We should include the parameter `type` which is `"narrow"` as default. For ATAC-seq experiments and ChIP-seq for TF we need to use `type="narrow"` (default) and for ChIP-seq for histone marks we need to use `type="broad"`.
-
-> For running this in IGTP machines, you first need to activate the virtual environment for the last MACS2 version. This means that before running your Rscript with such functions in your terminal, youll need to run `activate-macs-git-2017.5.15`.
-
-This function will return several files in the folder `path_pc` corresponding to our enriched regions.
-
-```{r Peak calling, include=TRUE, eval=FALSE}
-callPeak("thyroid_sample", path_bam="testData/bam/", 
-         path_pc="testData/peakCalling/", path_logs="testData/logs/", 
-         type="narrow")
-```
+**WORK IN PROGRESS**

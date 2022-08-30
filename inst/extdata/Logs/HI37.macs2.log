@@ -1,0 +1,105 @@
+INFO  @ Fri, 26 Aug 2022 12:05:08: 
+# Command line: callpeak -f BAM -t BAM/HI37.bam -g hs --outdir Peaks/ -n HI37 --tempdir Peaks/tmp/ --broad --broad-cutoff 0.1 --nomodel
+# ARGUMENTS LIST:
+# name = HI37
+# format = BAM
+# ChIP-seq file = ['BAM/HI37.bam']
+# control file = None
+# effective genome size = 2.70e+09
+# band width = 300
+# model fold = [5, 50]
+# qvalue cutoff for narrow/strong regions = 5.00e-02
+# qvalue cutoff for broad/weak regions = 1.00e-01
+# The maximum gap between significant sites is assigned as the read length/tag size.
+# The minimum length of peaks is assigned as the predicted fragment length "d".
+# Larger dataset will be scaled towards smaller dataset.
+# Range for calculating regional lambda is: 10000 bps
+# Broad region calling is on
+# Paired-End mode is off
+ 
+INFO  @ Fri, 26 Aug 2022 12:05:08: #1 read tag files... 
+INFO  @ Fri, 26 Aug 2022 12:05:08: #1 read treatment tags... 
+INFO  @ Fri, 26 Aug 2022 12:05:09:  1000000 
+INFO  @ Fri, 26 Aug 2022 12:05:11:  2000000 
+INFO  @ Fri, 26 Aug 2022 12:05:12:  3000000 
+INFO  @ Fri, 26 Aug 2022 12:05:13:  4000000 
+INFO  @ Fri, 26 Aug 2022 12:05:14:  5000000 
+INFO  @ Fri, 26 Aug 2022 12:05:15:  6000000 
+INFO  @ Fri, 26 Aug 2022 12:05:16:  7000000 
+INFO  @ Fri, 26 Aug 2022 12:05:18:  8000000 
+INFO  @ Fri, 26 Aug 2022 12:05:19:  9000000 
+INFO  @ Fri, 26 Aug 2022 12:05:20:  10000000 
+INFO  @ Fri, 26 Aug 2022 12:05:21:  11000000 
+INFO  @ Fri, 26 Aug 2022 12:05:22:  12000000 
+INFO  @ Fri, 26 Aug 2022 12:05:23:  13000000 
+INFO  @ Fri, 26 Aug 2022 12:05:25:  14000000 
+INFO  @ Fri, 26 Aug 2022 12:05:26:  15000000 
+INFO  @ Fri, 26 Aug 2022 12:05:27:  16000000 
+INFO  @ Fri, 26 Aug 2022 12:05:28:  17000000 
+INFO  @ Fri, 26 Aug 2022 12:05:29:  18000000 
+INFO  @ Fri, 26 Aug 2022 12:05:31:  19000000 
+INFO  @ Fri, 26 Aug 2022 12:05:32:  20000000 
+INFO  @ Fri, 26 Aug 2022 12:05:33:  21000000 
+INFO  @ Fri, 26 Aug 2022 12:05:34:  22000000 
+INFO  @ Fri, 26 Aug 2022 12:05:35:  23000000 
+INFO  @ Fri, 26 Aug 2022 12:05:36:  24000000 
+INFO  @ Fri, 26 Aug 2022 12:05:38:  25000000 
+INFO  @ Fri, 26 Aug 2022 12:05:39:  26000000 
+INFO  @ Fri, 26 Aug 2022 12:05:40:  27000000 
+INFO  @ Fri, 26 Aug 2022 12:05:41:  28000000 
+INFO  @ Fri, 26 Aug 2022 12:05:42:  29000000 
+INFO  @ Fri, 26 Aug 2022 12:05:43:  30000000 
+INFO  @ Fri, 26 Aug 2022 12:05:45:  31000000 
+INFO  @ Fri, 26 Aug 2022 12:05:46:  32000000 
+INFO  @ Fri, 26 Aug 2022 12:05:47:  33000000 
+INFO  @ Fri, 26 Aug 2022 12:05:48:  34000000 
+INFO  @ Fri, 26 Aug 2022 12:05:49:  35000000 
+INFO  @ Fri, 26 Aug 2022 12:05:51:  36000000 
+INFO  @ Fri, 26 Aug 2022 12:05:52:  37000000 
+INFO  @ Fri, 26 Aug 2022 12:05:53:  38000000 
+INFO  @ Fri, 26 Aug 2022 12:05:54:  39000000 
+INFO  @ Fri, 26 Aug 2022 12:05:55:  40000000 
+INFO  @ Fri, 26 Aug 2022 12:05:57:  41000000 
+INFO  @ Fri, 26 Aug 2022 12:05:58:  42000000 
+INFO  @ Fri, 26 Aug 2022 12:05:59:  43000000 
+INFO  @ Fri, 26 Aug 2022 12:06:00:  44000000 
+INFO  @ Fri, 26 Aug 2022 12:06:01:  45000000 
+INFO  @ Fri, 26 Aug 2022 12:06:02:  46000000 
+INFO  @ Fri, 26 Aug 2022 12:06:04:  47000000 
+INFO  @ Fri, 26 Aug 2022 12:06:05:  48000000 
+INFO  @ Fri, 26 Aug 2022 12:06:06:  49000000 
+INFO  @ Fri, 26 Aug 2022 12:06:07:  50000000 
+INFO  @ Fri, 26 Aug 2022 12:06:08:  51000000 
+INFO  @ Fri, 26 Aug 2022 12:06:10:  52000000 
+INFO  @ Fri, 26 Aug 2022 12:06:11:  53000000 
+INFO  @ Fri, 26 Aug 2022 12:06:12:  54000000 
+INFO  @ Fri, 26 Aug 2022 12:06:13:  55000000 
+INFO  @ Fri, 26 Aug 2022 12:06:14:  56000000 
+INFO  @ Fri, 26 Aug 2022 12:06:15:  57000000 
+INFO  @ Fri, 26 Aug 2022 12:06:17:  58000000 
+INFO  @ Fri, 26 Aug 2022 12:06:18:  59000000 
+INFO  @ Fri, 26 Aug 2022 12:06:19:  60000000 
+INFO  @ Fri, 26 Aug 2022 12:06:20:  61000000 
+INFO  @ Fri, 26 Aug 2022 12:06:21:  62000000 
+INFO  @ Fri, 26 Aug 2022 12:06:22:  63000000 
+INFO  @ Fri, 26 Aug 2022 12:06:24:  64000000 
+INFO  @ Fri, 26 Aug 2022 12:06:24: 64379336 reads have been read. 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #1 tag size is determined as 50 bps 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #1 tag size = 50.0 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #1  total tags in treatment: 64379336 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #1 user defined the maximum tags... 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #1 filter out redundant tags at the same location and the same strand by allowing at most 1 tag(s) 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #1  tags after filtering in treatment: 64340333 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #1  Redundant rate of treatment: 0.00 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #1 finished! 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #2 Build Peak Model... 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #2 Skipped... 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #2 Use 200 as fragment length 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #3 Call peaks... 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #3 Call broad peaks with given level1 -log10qvalue cutoff and level2: 1.301030, 1.000000... 
+INFO  @ Fri, 26 Aug 2022 12:06:25: #3 Pre-compute pvalue-qvalue table... 
+INFO  @ Fri, 26 Aug 2022 12:09:27: #3 Call peaks for each chromosome... 
+INFO  @ Fri, 26 Aug 2022 12:11:19: #4 Write output xls file... Peaks/HI37_peaks.xls 
+INFO  @ Fri, 26 Aug 2022 12:11:19: #4 Write broad peak in broadPeak format file... Peaks/HI37_peaks.broadPeak 
+INFO  @ Fri, 26 Aug 2022 12:11:19: #4 Write broad peak in bed12/gappedPeak format file... Peaks/HI37_peaks.gappedPeak 
+INFO  @ Fri, 26 Aug 2022 12:11:20: Done! 
