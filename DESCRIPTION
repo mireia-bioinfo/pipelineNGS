@@ -1,6 +1,6 @@
 Package: pipelineNGS
-Title: Methods for Sequencing Data Processing and Analysis
-Version: 0.0.0.9000
+Title: Methods for Epigenetic Data Processing
+Version: 0.1.0
 Authors@R: person("Mireia", "Ramos-Rodriguez", email = "mireia.ramos@upf.edu", role = c("aut", "cre"))
 Description: This package provides functions for processing FASTQ files and doing the downstream analysis, such as peak calling, conversion to bigWig format or motif analysis.
 Depends: R (>= 4.0.0)
@@ -15,7 +15,8 @@ Imports:
 	Rsamtools,
 	rtracklayer
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    scales
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
