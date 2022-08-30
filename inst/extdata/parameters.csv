@@ -2,4 +2,4 @@ Parameter,Experiment,Extra_bowtie2,Offset_correction,peak_type,shift
 ATAC,ATAC-seq,,TRUE,narrow,TRUE
 CHIP,ChIP-seq,,FALSE,broad,FALSE
 CT,CUT&TAG,--very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700,FALSE,broad,FALSE
-CR,CUT&RUN,,FALSE,,
+CR,CUT&RUN,,FALSE,narrow,FALSE
