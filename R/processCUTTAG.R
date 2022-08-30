@@ -24,7 +24,6 @@
 #' @param bedtools_bamtobed Path or alias of the bedtools bamtobed utility.
 #' @param bedtools_genomecov Path or alias of the bedtools genomecov utility.
 #' @param seacr Path or alias of the SEACR utilty.
-#' @export
 processCUTTAG <- function(fastq_files,
                           out_name,
                           type = "PE",

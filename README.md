@@ -31,149 +31,42 @@ Open your R session, install the `devtools` package if it is not already in your
     # Load pipelineNGS package
     library(pipelineNGS)
 
-## Quick start
+## Pipeline Overview
 
-### Running pipelineNGS with H3K27ac ChIP-seq data
+In this package we currently have implemented the pipelines for analyzing the following experiments:
 
-#### Single end
+-   ATAC-seq (`ATAC`).
+-   ChIP-seq for histone marks (`CHIP`).
+-   CUTandTAG for histone marks (`CT`).
+-   CUTandRUN for transcription factors (`CR`).
 
-Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
+In the following figure you can see a description of the steps needed for the analysis of each type of experiment, with specific arguments (if any) used in the different steps.
 
-    library(pipelineNGS)
+![](vignettes/figures/process_epi_map.png)
 
-    ## List of fastq files to analyze
-    fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
+Here is an example on how to run a ChIP-seq analysis with single-end data.
 
-    ## Name of the output files
-    output_names <- gsub(".fastq.gz", "", basename(fastq_files))
+    ## General parameters
+    index <- "/vault/refs/indexes/hg38"
+    blacklist <- "/vault/refs/Blacklist/lists/hg38-blacklist.v2.bed"
 
-    ## Proces fastq files
-    process_epigenome(fastq_files = fastq_files,
-                      run_fastqc = FALSE,
-                      seq_type = "CHIP",
-                      type = "SE",
-                      out_name = output_names,
-                      index = "/biodata/indices/species/Hsapiens/hg38",
-                      blacklist = "/imppc/labs/lplab/share/reference/blacklists/hg38-blacklist.v2.bed",
-                      cores=10)
-                      
-    ## Get and save stats
-    stats <- getStats(raw_bam=list.files("BAM/", pattern=".raw.bam$", full.names=TRUE),
-                      path_logs = "Logs/",
-                      path_peaks = "Peaks",
-                      peak_type = "broadPeak") 
-    save(stats, file="Logs/stats_samples.rda")
+    ## Example Single End ##
+    fastq_files <- c("fastq/sample1_L1.fastq.gz", "fastq/sample1_L2.fastq.gz",
+                     "fastq/sample1_L3.fastq.gz", "fastq/sample2_L2.fastq.gz",
+                     "fastq/sample3_L1.fastq.gz", "fastq/sample3_L3.fastq.gz")
 
-From the terminal run the following commands:
+    ## Convert to list to use as input for process_epigenome()
+    # Create one list element for each simple
+    names <- sapply(strsplit(basename(fastq_files), "_"), function(x) x[1])
+    fastq_input <- split(fastq_files, names)
+    fastq_input
 
-    $ Rscript process_samples.R
-
-#### Paired end
-
-    library(pipelineNGS)
-
-    ## List of fastq files to analyze
-    fastq_files <- list.files("your_fastq_folder", pattern="fastq.gz", full.names=TRUE)
-
-    ## Group files from the same sample
-    names <- gsub("_read[[:digit:]].fastq.gz", "", basename(fastq_files)) # extract basename
-    fastq_files <- split(fastq_files, names) # create list
-
-    ## Name of the output files
-    output_names <- unique(names)
-
-    ## Proces fastq files
-    process_epigenome(fastq_files = fastq_files,
-                      run_fastqc = FALSE,
-                      seq_type = "CHIP",
-                      type = "PE",
-                      out_name = output_names,
-                      index = "/biodata/indices/species/Hsapiens/hg38",
-                      cores=10)
-                      
-    ## Get and save stats
-    stats <- getStats(raw_bam=list.files("BAM/", pattern=".raw.bam$", full.names=TRUE),
-                      path_logs = "Logs/",
-                      path_peaks = "Peaks",
-                      peak_type = "broadPeak") 
-    save(stats, file="Logs/stats_samples.rda")
-
-From the terminal run the following commands:
-
-    $ Rscript process_samples.R
-
-### Running pipelineNGS with ATAC-seq data
-
-Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
-
-#### Single end
-
-    library(pipelineNGS)
-
-    ## List of fastq files to analyze
-    fastq_files <- list.files("your_fastq_folder/", pattern="fastq.gz", full.names=TRUE)
-
-    ## Name of the output files
-    output_names <- gsub(".fastq.gz", "", basename(fastq_files))
-
-    ## Proces fastq files
-    process_epigenome(fastq_files = fastq_files,
-                      run_fastqc = FALSE,
-                      seq_type = "ATAC",
-                      type = "SE",
-                      out_name = output_names,
-                      index = "/biodata/indices/species/Hsapiens/hg38",
-                      blacklist = "/imppc/labs/lplab/share/reference/blacklists/hg38-blacklist.v2.bed",
-                      gen_sizes = "/imppc/labs/lplab/share/reference/chrom_sizes/hg38.len",
-                      cores=10)
-
-    ## Get and save stats
-    stats <- getStats(raw_bam=list.files("BAM/", pattern=".raw.bam$", full.names=TRUE),
-                      path_logs = "Logs/",
-                      path_peaks = "Peaks",
-                      peak_type = "narrowPeak") 
-    save(stats, file="Logs/stats_samples.rda")
-
-From the terminal run the following commands:
-
-    $ Rscript process_samples.R
-
-#### Paired end
-
-Create a file called `process_samples.R` containing the following code (change `your_fastq_folder` and the suffix of your files to resemble your data):
-
-#### Single end
-
-    library(pipelineNGS)
-
-    ## List of fastq files to analyze
-    fastq_files <- list.files("your_fastq_folder", pattern="fastq.gz", full.names=TRUE)
-
-    ## Group files from the same sample
-    names <- gsub("_read[[:digit:]].fastq.gz", "", basename(fastq_files)) # extract basename
-    fastq_files <- split(fastq_files, names) # create list
-
-    ## Name of the output files
-    output_names <- unique(names)
-
-    ## Proces fastq files
-    process_epigenome(fastq_files = fastq_files,
-                      run_fastqc = FALSE,
-                      seq_type = "ATAC",
-                      type = "PE",
-                      out_name = output_names,
-                      index = "/biodata/indices/species/Hsapiens/hg38",
-                      blacklist = "/imppc/labs/lplab/share/reference/blacklists/hg38-blacklist.v2.bed",
-                      gen_sizes = "/imppc/labs/lplab/share/reference/chrom_sizes/hg38.len",
-                      cores=10)
-
-    ## Get and save stats
-    stats <- getStats(raw_bam=list.files("BAM/", pattern=".raw.bam$", full.names=TRUE),
-                      path_logs = "Logs/",
-                      path_peaks = "Peaks",
-                      peak_type = "narrowPeak") 
-    save(stats, file="Logs/stats_samples.rda")
-
-From the terminal run the following commands:
-
-    $ Rscript process_samples.R
+    ## Using the files described in the previous chunk:
+    process_epigenome(fastq_files=fastq_input,
+                      out_name=names(fastq_input),
+                      run_fastqc=TRUE,
+                      seq_type="CT",
+                      type="PE",
+                      index=index,
+                      blacklist=blacklist,
+                      cores=6)

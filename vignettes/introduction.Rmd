@@ -1,13 +1,9 @@
 ---
-title: "Processing Sequencing data with pipelineNGS"
+title: "Processing epigenome data with pipelineNGS"
 author: "Mireia Ramos-Rodriguez"
-date: "`r Sys.Date()`"
-output: 
-  BiocStyle::html_document:
-    fig.align: "center"
-    self.contained: TRUE
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Processing Sequencing data with pipelineNGS}
+  %\VignetteIndexEntry{Processing epigenome data with pipelineNGS}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,7 +18,7 @@ BiocManager::install("mireia-bioinfo/pipelineNGS")
 
 Load the package:
 
-```{r Setup}
+```{r}
 library(pipelineNGS)
 ```
 
@@ -44,7 +40,7 @@ Optional:
 
 Mandatory for ATAC-seq offset correction and SEACR peak calling:
 
--   Chromosome sizes (`gen_sizes`). You can generate this file by using `fetchChromSizes` from [UCSC tools](http://hgdownload.soe.ucsc.edu/admin/exe/) or downloading int directly from the UCSC: [hg38](https://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes) or [hg19](https://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.chrom.sizes).
+-   Chromosome sizes (`gen_sizes`). You can generate this file by using `fetchChromSizes` from [UCSC tools](http://hgdownload.soe.ucsc.edu/admin/exe/) or downloading it directly from the UCSC: [hg38](https://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.chrom.sizes) or [hg19](https://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.chrom.sizes).
 
 ## Recommended directory organization
 
@@ -63,12 +59,12 @@ In this package we currently have implemented the pipelines for analyzing the fo
 
 -   ATAC-seq (`ATAC`).
 -   ChIP-seq for histone marks (`CHIP`).
--   CUT&TAG for histone marks (`CT`).
--   CUT&RUN for transcription factors (`CR`).
+-   CUTandTAG for histone marks (`CT`).
+-   CUTandRUN for transcription factors (`CR`).
 
 In the following figure you can see a description of the steps needed for the analysis of each type of experiment, with specific arguments (if any) used in the different steps.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, out.width="95%"}
 knitr::include_graphics("figures/process_epi_map.png")
 ```
 
@@ -120,7 +116,7 @@ Additional arguments refer to specific parts of the processing and will be descr
 
 All needed data processing steps are wrapped inside the function `process_epigenome`. We will now go through every key step to explain the important parameters.
 
-The following chunk shows a minor example of how to run an analyses, in this case of paired-end (`type=PE`) CUT&TAG data (`seq_type="CT"`):
+The following chunk shows a minor example of how to run an analyses, in this case of paired-end (`type=PE`) CUTandTAG data (`seq_type="CT"`):
 
 ```{r, eval=FALSE}
 index <- "/vault/refs/indexes/hg38"
@@ -154,7 +150,7 @@ For the alignment of epigenetic data we use [**bowtie2**](http://bowtie-bio.sour
 -   `-x <bt2-idx>`: Index file name prefix (minus trailing .X.bt2).
 -   `-U`/`-1`,`-2`: Indicates the location and names of the fastq files to align. `-U` stands for single-end reads and `-1` and `-2` for the pair 1 reads and pair 2 reads, respectively (paired-end reads).
 -   `-p`: Number of alignment threads to launch.
--   Additional parameters are added in the case of CUT&TAG samples, following the analysis described in: <https://yezhengstat.github.io/CUTTag_tutorial/#311_Alignment_to_HG38>
+-   Additional parameters are added in the case of CUTandTAG samples, following the analysis described in: <https://yezhengstat.github.io/CUTTag_tutorial/#311_Alignment_to_HG38>
 
 You can check the statistics of the alignment in the `Logs/` folder and the result for the alignment can be found in `BAM/*.raw.bam`.
 
