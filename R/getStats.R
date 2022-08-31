@@ -17,7 +17,7 @@ getStats <- function(path_logs="Logs/",
                      path_peaks="Peaks/",
                      peak_suffix="narrowPeak") {
 
-  names <- gsub(".alignment.log", "", list.files(path_logs, pattern="alignment.log"))
+  names <- gsub(".raw.idxstats.log", "", list.files(path_logs, pattern=".raw.idxstats.log"))
   stats <- lapply(names,
                   .getStatsSingle,
                   path_logs=path_logs,
@@ -39,18 +39,23 @@ getStats <- function(path_logs="Logs/",
     log <- readLines(con = al_log)
 
     if (!any(grepl("unpaired", log))) {   # If stats are from PE file
+      paired <- TRUE
       stats <- .parseBowtie2LogPE(file.path(path_logs, paste0(name, ".alignment.log")))
     } else { # If stats are from SE file
+      paired <- FALSE
       stats <- .parseBowtie2LogSE(file.path(path_logs, paste0(name, ".alignment.log")))
     }
 
     total_reads <- stats$total
     total_aligned <- stats$unique + stats$multi
+    multi <- stats$multi
     alignment_rate <- total_aligned/total_reads*100
 
   } else {
+    paired <- FALSE
     total_reads <- NA
     total_aligned <- NA
+    multi <- NA
     alignment_rate <- NA
   }
 
@@ -58,7 +63,10 @@ getStats <- function(path_logs="Logs/",
   idxstats <- tableFromIdxstats(file.path(path_logs, paste0(name, ".raw.idxstats.log")))
   chrM <- idxstats$aligned[idxstats$chr=="chrM"]
 
-  if (is.na(total_aligned)) total_aligned <- sum(idxstats$aligned)
+  if (is.na(total_aligned)) {
+    total_aligned <- sum(idxstats$aligned)
+    total_reads <- sum(idxstats$aligned) + sum(idxstats$not_aligned)
+  }
 
   # Get duplicates stats
   if (file.exists(file.path(path_logs, paste0(name, ".rmdup.log")))) {
@@ -85,11 +93,18 @@ getStats <- function(path_logs="Logs/",
   stats_final <-tableFromIdxstats(file.path(path_logs, paste0(name, ".idxstats.log")))
   final_reads <- sum(stats_final$aligned)
 
+  if (paired) {
+    chrM <- chrM/2
+    duplicates <- duplicates/2
+    final_reads <- final_reads/2
+
+  }
+
   # Create data.frame
   df <- data.frame(sampleID=name,
                    total_reads=total_reads,
                    aligned_reads=total_aligned,
-                   multi_reads=stats$multi,
+                   multi_reads=multi,
                    chrM_reads=chrM,
                    duplicate_reads=duplicates,
                    final_reads=final_reads,
@@ -114,11 +129,11 @@ getStats <- function(path_logs="Logs/",
 .parseBowtie2LogPE<- function(logfile) {
   log <- readLines(con = logfile)
   total <- .obtainReadNumber(log[grep("were paired", log)])*2
-  unaligned <- .obtainReadNumber(log[grep(") aligned concordantly 0 times", log)])*2
-  unique <- .obtainReadNumber(log[grep("aligned concordantly exactly 1 time", log)])*2
-  multi <- .obtainReadNumber(log[grep(" aligned concordantly >1 times", log)])*2
+  unaligned <- .obtainReadNumber(log[grep(") aligned concordantly 0 times", log)])
+  unique <- .obtainReadNumber(log[grep("aligned concordantly exactly 1 time", log)])
+  multi <- .obtainReadNumber(log[grep(" aligned concordantly >1 times", log)])
 
-  stats <- data.frame(total, unaligned, unique, multi)
+  stats <- data.frame(total/2, unaligned, unique, multi)
   return(stats)
 }
 
