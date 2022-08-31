@@ -1,5 +1,9 @@
 # pipelineNGS 0.1.0
 
+-   Fixed PE stats to total reads, not pairs.
+
+# pipelineNGS 0.1.0
+
 -   Added a `NEWS.md` file to track changes to the package.
 -   Added `pkgdown` site
 -   Current experiments: ATAC, CHIP, CT (CUT&TAG) and CR (CUT&RUN).
