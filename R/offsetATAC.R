@@ -107,9 +107,11 @@ offsetATACSE <- function(file,
 
   ## Rename file to match outbam name
   if(!missing(outbam)){
-    file.rename(from=mergedfile, to=outbam)
-    file.rename(from=paste0(mergedfile, ".bai"),
+    file.copy(from=mergedfile, to=outbam)
+    file.copy(from=paste0(mergedfile, ".bai"),
                 to=paste0(outbam, ".bai"))
+    file.remove(mergedfile)
+    file.remove(paste0(mergedfile, ".bai"))
   }else{
     gal1 <- GenomicAlignments::readGAlignments(mergedfile, param = meta$param)
     mcols(gal1)$MD <- NULL
